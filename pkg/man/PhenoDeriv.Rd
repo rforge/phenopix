@@ -1,0 +1,37 @@
+\name{PhenoDeriv}
+\alias{PhenoDeriv}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+A function to extract thresholds
+%%  ~~function to do ... ~~
+}
+\description{
+See PhenoDeriv from package greenbrown
+%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+}
+\usage{
+PhenoDeriv(x, formula = NULL, uncert = FALSE, params = NULL, breaks, ...)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{x}{
+A named vector with the parameters of the equation used to fit the data. 
+}
+  \item{formula}{
+  Inherited from previous steps of the process.
+}
+  \item{uncert}{
+  Should uncertainty be estimated?
+}
+  \item{params}{
+  Inherited from previous steps of the process.  
+}
+
+  \item{breaks}{
+Currently unused
+}
+  \item{\dots}{
+  Further arguments, currently not used
+}
+}
+

@@ -1,0 +1,80 @@
+\name{FitDoubleLogKlHeavy}
+\alias{FitDoubleLogKlHeavy}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+ A function to fit a double logisitic function to a vector according to 
+ Klosterman et al. (2014) 
+}
+\description{
+This function fits a double logistic curve to observed values using the
+ function as described in Klosterman et al. (2014), equation 7. 
+}
+\usage{
+FitDoubleLogKlHeavy(x, t = index(x), tout = t, max.iter = 200, ...)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{x}{
+  A vector or, better, an univariate ts or zoo object. 
+}
+  \item{t}{
+  A vector of time (in numeric doys), if not provided index(x) is
+  retrieved. 
+}
+  \item{tout}{
+  For gapfilling pourposes, a vector of time steps at which the function
+  can be predicted. 
+}
+  \item{max.iter}{
+  Maximum number of iteraction for a single optimization process. See details. 
+}
+  \item{\dots}{
+  Further arguments currenlty unused. 
+}
+}
+\details{
+The function estimates parameters of the double logistic equation from
+ Klosterman et al. 2014. The wrapper function \code{KlostermanFit} calls 
+ this function and additionally allows the calculation of uncertainty. 
+ So better use \code{KlostermanFit}. This function performs an optimization 
+ similar in concept to the one performed in \code{FitDoubleLogKlLight} but 
+ with additional recursive optimization which is about 10 times more time 
+ consuming but allows for a better representation of the data. It it suggested 
+ to fit the light version of the equation and if the fit is not good enought, 
+ check this function out.  
+}
+\value{
+    A list containing the following items. 
+\item{predicted}{Predicted values from the equation}
+\item{params}{Equation parameters}
+\item{formula}{The equation}
+}
+\references{
+Klosterman ST, Hufkens K, Gray JM, Melaas E, Sonnentag O, Lavine I, Mitchell L, 
+Norman R, Friedl MA, Richardson A D (2014) Evaluating remote sensing of deciduous 
+forest phenology at multiple spatial scales using PhenoCam imagery, Biogeosciences, 
+11, 4305-4320, doi:10.5194/bg-11-4305-2014.
+}
+\author{
+Gianluca Filippa <gian.filippa@gmail.com>
+}
+\seealso{
+\code{\link{KlostermanFit}}
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+\examples{
+data(bartlett2009.filtered)
+fit <- FitDoubleLogKlHeavy(bartlett2009.filtered) ## about 10 seconds
+## check fitting
+plot(bartlett2009.filtered)
+lines(fit$predicted, col='red')
+## look at fitting parameters
+fit$params
+## look at fitting equation, where t is time
+fit$formula
+## recalculate fitted values from the formula
+t <- index(bartlett2009.filtered)
+predicted <- eval(fit$formula, envir=as.list(fit$params))
+## and add them to the existing plot (hopefully it returns the same as red line!)
+lines(t, predicted, col='blue', lwd=2)
+}
