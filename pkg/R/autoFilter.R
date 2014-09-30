@@ -73,31 +73,41 @@ function(data, dn, raw.dn=TRUE, brt=NULL, na.fill=TRUE,
 ## 90th quantile filter on a 3 days moving window
 .max.filter <- function(data, name='gcc', act.opts, ...) {
     w <- act.opts$w
-    doy.seq <- as.numeric(unique(data$doy))
-    ## a doy sequence of disired window
-    index.beg <- seq(range(doy.seq)[1], range(doy.seq)[2]-(w-1))
-    index.end <- seq(range(doy.seq)[1]+(w-1), range(doy.seq)[2])
-    VImax<-data[,name]
-    rolled <- VImax
-    for (i in 1:length(index.beg)) {
-        act.beg <- index.beg[i]
-        act.end <- index.end[i]
-        days.in <- act.beg:act.end
-        ## if first window, set it in either first and second day
-        if (i==1) {day.to.set <- days.in[1:2]}
-        ## if last window, set it in either second and third (last) day
-        if (i==length(index.beg)) {day.to.set <- days.in[2:3]}
-        ## else set it in second day
-        if (i!=1 & i!=length(index.beg)) {day.to.set <- days.in[2]}
-        pos.to.keep <- which(as.numeric(data$doy) %in% days.in==TRUE)
-        pos.to.set <- which(as.numeric(data$doy) %in% day.to.set==TRUE)
-        max.quant <- quantile(na.omit(VImax[pos.to.keep]),probs=(0.9))
-        rolled[pos.to.keep] <- max.quant
-        pos.na <- which(is.na(VImax[pos.to.keep])==TRUE)
-        rolled[pos.to.keep][pos.na] <- NA
+    .max.fun <- function(x) {
+    quantile(x, 0.9, na.rm=T)
     }
+    computed.frequency <- median(diff(as.numeric(data$time)), na.rm=T)
+    data.per.day <- median(aggregate(data[,1], by=list(as.numeric(as.character(data$doy))), FUN=length)[,2], na.rm=T)
+    # days.freq <- computed.frequency/60/60/24
+    # one.day.slot <- 1/days.freq
+    true.window <- data.per.day*w
+    new.max <- rollapply(data[,name], FUN=.max.fun, width=true.window, fill='extend')
+    # doy.seq <- as.numeric(unique(data$doy))
+    # ## a doy sequence of disired window
+    # index.beg <- seq(range(doy.seq)[1], range(doy.seq)[2]-(w-1))
+    # index.end <- seq(range(doy.seq)[1]+(w-1), range(doy.seq)[2])
+    # VImax<-data[,name]
+    # rolled <- VImax
+    # for (i in 1:length(index.beg)) {
+    #     act.beg <- index.beg[i]
+    #     act.end <- index.end[i]
+    #     days.in <- act.beg:act.end
+    #     ## if first window, set it in either first and second day
+    #     if (i==1) {day.to.set <- days.in[1:(w-1)]}
+    #     ## if last window, set it in either second and third (last) day
+    #     if (i==length(index.beg)) {day.to.set <- days.in[2:w]}
+    #     ## else set it in second day
+    #     if (i!=1 & i!=length(index.beg)) {day.to.set <- days.in[2:(w-1)]}
+    #     pos.to.keep <- which(as.numeric(data$doy) %in% days.in==TRUE)
+    #     pos.to.set <- which(as.numeric(data$doy) %in% day.to.set==TRUE)
+    #     max.quant <- quantile(na.omit(VImax[pos.to.keep]),probs=(0.9))
+    #     rolled[pos.to.keep] <- max.quant
+    #     pos.na <- which(is.na(VImax[pos.to.keep])==TRUE)
+    #     rolled[pos.to.keep][pos.na] <- NA
+    # }
     ## final.data.frame <- data.frame(time=data$time, doy=data$doy, raw=data[,name], max.filter=rolled)
-    return(rolled)
+    # return(rolled)
+ return(new.max)   
 }
 
 ## spline filter as used in Migliavacca et al. 2011 (Agricultural and Forest Meteorology)
@@ -222,9 +232,11 @@ function(data, dn, raw.dn=TRUE, brt=NULL, na.fill=TRUE,
         names.match <- which(names(filtered.data)%in%paste(filter, '.filtered', sep=''))
         ylims <- range(c(filtered.data$gcc, filtered.data[,names.match]), na.rm=T)
         with(filtered.data, plot(time, gcc, col=act.palette[1], ylim=ylims, pch=16))
+        if (length(filter)==1) points(filtered.data$time, filtered.data[,names.match], col=act.palette[2], pch=16) else {
         for (i in 1:length(filter)) {
             points(filtered.data$time, filtered.data[,names.match][,i], col=act.palette[i+1], pch=16)
         }
+    }
         legend('bottomright', col=act.palette, legend=legend.names, pch=16, bty='n')
     }
     doys <- as.numeric(as.character(daily.agg$doy))
