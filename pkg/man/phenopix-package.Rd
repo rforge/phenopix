@@ -100,14 +100,14 @@ greenbrown.r-forge.r-project.org
 ## step 3: filter data
 data(bartlett2009)
 ## with raw.dn ==TRUE and column position for chromatic coordinates
-filtered.data <- autoFilter(bartlett2009, dn=c(4:6), filter=c('night', 'spline', 'max'),
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), filter=c('night', 'spline', 'max'),
                                          filter.options=NULL)
 ## same as before but returning unfilled data 
-filtered.data <- autoFilter(bartlett2009, dn=c(4:6), 
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
 	filter=c('night', 'spline', 'max'),
     filter.options=NULL, na.fill=FALSE)
 ## all filters in action (check the plot)
-filtered.data <- autoFilter(bartlett2009, dn=c(4:6), 
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
 	filter=c('night','blue', 'mad','spline', 'max'),
     filter.options=NULL)
 
