@@ -15,7 +15,7 @@ names(metrics) <- paste0('bp', 1:length(metrics))
 if (plot) {
   ylons <- mean(x, na.rm=TRUE)
   plot(x, ...)
-  colors <- palette()[1:6]
+  colors <- palette()[1:length(metrics)]
     abline(v=metrics[2,], col=colors)
     text(metrics[2, ], y=ylons*1.02, labels=names(metrics), col=colors) 
     for (a in 1:length(metrics)) arrows(metrics[1,a], ylons, metrics[3,a], ylons, code=3, angle=90, length=0.1, 
