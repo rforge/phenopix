@@ -1,7 +1,7 @@
 
 PhenoBP <- function(x, breaks=3, confidence=0.95, plot=TRUE, ...) {
 
-bp.tmp <- breakpoints(x~index(x), breaks=breaks)
+bp.tmp <- breakpoints(x~index(x), breaks=breaks, ...)
 interval <- confint(bp.tmp, level=confidence)
 interval.index <- index(x)[as.vector(interval$confint)]
 interval.matrix <- matrix(interval.index, nrow=3, byrow=T)
