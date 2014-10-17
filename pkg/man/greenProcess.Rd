@@ -61,7 +61,11 @@ Number of replications for the uncertainty estimation.
 }
 \details{
 This function is a wrapper function that allows to fit a curve to a yearly trajectories of greeneess 
-and extract phenological thresholds according to a given criterion.   
+and extract phenological thresholds according to a given criterion. Handeling this main function may 
+allow the user to forget learning other, rather internal functions. The combination of \code{greenProcess} 
+and \code{extract} allows to use main capabilities of this package. Virtually all other functions included
+are called at some points within this function. The object of class \code{phenopix} which is created is a rather 
+complex list that can be explored via the \code{extract} function. Check it out for further details.    
 }
 \value{
   An object of class \code{phenopix} with dedicated functions: plot(), print(), summary() and fitted(). 

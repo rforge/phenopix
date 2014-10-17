@@ -20,7 +20,7 @@ DrawROI(path_img_ref, path_ROIs, nroi = 1, roi.names)
 %%     ~~Describe \code{path_img_ref} here~~
 }
   \item{path_ROIs}{
-  Path where to store image with ROI and ROI coordinates
+  Path where to store image with ROI and ROI coordinates.
 %%     ~~Describe \code{path_ROIs} here~~
 }
   \item{nroi}{
@@ -35,7 +35,9 @@ The number of ROIs you want to draw.
 \details{
 The function allows to draw one or more ROIs on an image or to load saved ROIs. 
 The function uses locator() to locate points, closes the polygon and stores an RData with coordinates. 
-The use of locator is restricted to only some graphic devices. See \code{locator} for details. 
+The use of locator is restricted to only some graphic devices. Tne function attempts to open an X11 device. 
+In Mac OS the poligon is closed by typing ESC key. 
+See \code{locator} for details. 
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
