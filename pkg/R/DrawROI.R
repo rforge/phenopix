@@ -25,8 +25,8 @@ function(path_img_ref,path_ROIs,nroi=1,roi.names)
     roi.data <- list()
   
     for (i in seq(as.numeric(nroi))) {
-      
-      x11()
+    infos <- Sys.info()['sysname']
+     if (infos=='Darwin') quartz() else x11()
       # plot(img)
       par(mar=c(1,1,4,1))
       plot(0, type='n', xlim=c(0,1), ylim=c(0,1), axes=FALSE)

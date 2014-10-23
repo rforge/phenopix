@@ -1,5 +1,5 @@
 autoFilter <-
-function(data, dn, raw.dn=TRUE, brt=NULL, na.fill=TRUE, 
+function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.fill=TRUE, 
     filter=c('night','spline', 'max'), filter.options=NULL, 
     plot=TRUE, ...) {
     ## define internal functions
@@ -78,35 +78,8 @@ function(data, dn, raw.dn=TRUE, brt=NULL, na.fill=TRUE,
     }
     computed.frequency <- median(diff(as.numeric(data$time)), na.rm=T)
     data.per.day <- median(aggregate(data[,1], by=list(as.numeric(as.character(data$doy))), FUN=length)[,2], na.rm=T)
-    # days.freq <- computed.frequency/60/60/24
-    # one.day.slot <- 1/days.freq
     true.window <- data.per.day*w
     new.max <- rollapply(data[,name], FUN=.max.fun, width=true.window, fill='extend')
-    # doy.seq <- as.numeric(unique(data$doy))
-    # ## a doy sequence of disired window
-    # index.beg <- seq(range(doy.seq)[1], range(doy.seq)[2]-(w-1))
-    # index.end <- seq(range(doy.seq)[1]+(w-1), range(doy.seq)[2])
-    # VImax<-data[,name]
-    # rolled <- VImax
-    # for (i in 1:length(index.beg)) {
-    #     act.beg <- index.beg[i]
-    #     act.end <- index.end[i]
-    #     days.in <- act.beg:act.end
-    #     ## if first window, set it in either first and second day
-    #     if (i==1) {day.to.set <- days.in[1:(w-1)]}
-    #     ## if last window, set it in either second and third (last) day
-    #     if (i==length(index.beg)) {day.to.set <- days.in[2:w]}
-    #     ## else set it in second day
-    #     if (i!=1 & i!=length(index.beg)) {day.to.set <- days.in[2:(w-1)]}
-    #     pos.to.keep <- which(as.numeric(data$doy) %in% days.in==TRUE)
-    #     pos.to.set <- which(as.numeric(data$doy) %in% day.to.set==TRUE)
-    #     max.quant <- quantile(na.omit(VImax[pos.to.keep]),probs=(0.9))
-    #     rolled[pos.to.keep] <- max.quant
-    #     pos.na <- which(is.na(VImax[pos.to.keep])==TRUE)
-    #     rolled[pos.to.keep][pos.na] <- NA
-    # }
-    ## final.data.frame <- data.frame(time=data$time, doy=data$doy, raw=data[,name], max.filter=rolled)
-    # return(rolled)
  return(new.max)   
 }
 
@@ -182,7 +155,7 @@ function(data, dn, raw.dn=TRUE, brt=NULL, na.fill=TRUE,
     } else {
         if (is.null(brt)) warning('Provide column name for brightness')
         brt <- data[,brt]
-        rgb.indeces <- data[,dn]
+        rgb.indices <- data[,dn]
         }
     names(rgb.indices) <- c('rcc', 'gcc', 'bcc')
     new.data <- data.frame(time, doy, rgb.indices, brt)
