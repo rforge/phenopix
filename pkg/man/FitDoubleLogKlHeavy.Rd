@@ -73,6 +73,7 @@ fit$params
 ## look at fitting equation, where t is time
 fit$formula
 ## recalculate fitted values from the formula
+library(zoo)
 t <- index(bartlett2009.filtered)
 predicted <- eval(fit$formula, envir=as.list(fit$params))
 ## and add them to the existing plot (hopefully it returns the same as red line!)
