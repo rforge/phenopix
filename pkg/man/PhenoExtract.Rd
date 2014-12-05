@@ -10,7 +10,8 @@ Methods include 'spline', 'derivatives', 'klosterman', 'gu'. See details for the
 computation of each method.  
 }
 \usage{
-PhenoExtract(data, method = "spline", uncert = FALSE, breaks = 3, envelope = "quantiles", 
+PhenoExtract(data, method = "spline", uncert = FALSE, 
+  breaks = 3, envelope = "quantiles", 
   quantiles = c(0.1, 0.9), plot = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.

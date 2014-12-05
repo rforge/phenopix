@@ -26,13 +26,15 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \examples{
 data(bartlett2009)
 ## with raw.dn ==TRUE and column position for chromatic coordinates
-filtered.data <- autoFilter(bartlett2009, dn=c(4:6), filter=c('night', 'spline', 'max'),
-                                         filter.options=NULL, raw.dn=TRUE)
+filtered.data <- autoFilter(bartlett2009, dn=c(4:6), 
+	filter=c('night', 'spline', 'max'),
+    filter.options=NULL, raw.dn=TRUE)
 my.options <- get.options()
 ## change time window for max filter
 my.options$max.filter$w <- 5
-filtered.data2 <- autoFilter(bartlett2009, dn=c(4:6), filter=c('night', 'spline', 'max'),
-                                         filter.options=my.options, raw.dn=TRUE)
+filtered.data2 <- autoFilter(bartlett2009, dn=c(4:6), 
+	filter=c('night', 'spline', 'max'),
+    filter.options=my.options, raw.dn=TRUE)
 plot(filtered.data$max.filtered)
 lines(filtered.data2$max.filtered, col='red')
 }

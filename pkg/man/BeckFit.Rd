@@ -7,7 +7,8 @@ A function to fit a double logisitic function to a vector according to Beck et a
 \description{
  This function fits a double logistic curve to observed values using the
  function as described in Beck et al. (2006) (equation 3). It can also
- provide and uncertainty estimation. 
+ provide and uncertainty estimation. Rather internal function. 
+ See \code{greenProcess}
 }
 \usage{
 BeckFit(ts, uncert = FALSE, nrep = 100)

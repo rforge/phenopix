@@ -11,7 +11,8 @@ region of interest of a jpeg image.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL, plot = TRUE)
+extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL, 
+  plot = TRUE, begin = NULL, spatial = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,6 +36,19 @@ extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL, plot = TRUE)
   Should a diagnostic plot with red, green and blue indexes be returned?
 %%     ~~Describe \code{plot} here~~
 }
+  \item{begin}{
+  The user can provide a beginning date as a character string in the form 'YYYY-MM-DD'. Images 
+  with a time stamp earlier than the provided date will be discarded. Default is NULL and the whole
+  time series will be processed. Useful when updating an existing time series.
+%%     ~~Describe \code{plot} here~~
+}
+  \item{spatial}{
+  If spatial = FALSE (the default) vegetation indexes are averaged over the entire ROI. If set to FALSE 
+  red green and blue digital numbers are extracted for each pixel in the ROI. Since this option builds large 
+  objects, it is recommended to use it on resized images, so to have to more than 10k pixels in the ROI.  
+ %     ~~Describe \code{plot} here~~
+}
+
 }
 \details{
 In the pixels contained in a ROI (which are loaded from the given folder), 
@@ -46,8 +60,12 @@ r/brightness. After the calculation, all pixel data are averaged over the ROI.
 ExtractDateFilename is then called to get a time vector and a doy. The function 
 applies recursively for all images in a folder and allows to get a multivariate 
 time series of the various indexes. 
-A plot is also generated and saved as .png if plot=TRUE 
-
+A plot is also generated and saved as .png if plot=TRUE
+Option \code{begin} allows to update the process from a given date without reprocessing
+the whole time series of images. In this case a separate Rdata will be saved (and not overwritten
+to an already existing one) with the date of begin in the filename. 
+Option \code{spatial} allows to compute digital numbers for each pixel instead of averaging them 
+over the entire ROI.    
 Note: Brightness and relative color indices are calculated for each pixel and THEN 
 averaged over the ROI. This is different from averaging the brightness and raw colors 
 over the entire ROI and THEN calculate a ROI-based relative color index. This second 
@@ -57,8 +75,10 @@ raw dn are provided and brightness is calculated from them.
 }
 \value{
 A list with one data.frame for each ROI containing the multivariate time series 
-of various vegetation indices. 
+of various vegetation indices if \code{spatial} = FALSE. Else, a list with one list for each ROI. Each 
+sublist will be a named list that can be handled with appropriate functions, different from the one used 
+if \code{spatial} = FALSE. 
 }
 \author{
-Edoardo Cremonese <e.cremonese@arpa.vda.it>
+Edoardo Cremonese <e.cremonese@arpa.vda.it>, Gianluca Filippa <gian.filippa@gmail.com>
 }

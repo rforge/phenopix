@@ -49,11 +49,12 @@ fitted <- greenProcess(bartlett2009.filtered, 'klosterman',
   'klosterman', plot=FALSE, uncert=TRUE, nrep=5)
 plot(fitted) ## default
 ## slightly more elaborated, with suppression of default title 
-plot(fitted, type='p', pch=20, ylab='GCC', xlab='DOY', col='grey', what='all', main='Fit + thresholds')
+plot(fitted, type='p', pch=20, ylab='GCC', xlab='DOY', col='grey', 
+  what='all', main='Fit + thresholds')
 ## only with the fitting curve
-plot(fitted, type='p', pch=20, ylab='GCC', xlab='DOY', col='grey', what='fitting', main='Fit only')
+plot(fitted, type='p', pch=20, ylab='GCC', xlab='DOY', col='grey', 
+  what='fitting', main='Fit only')
 ## show a boxplot of thresholds extracted from the uncertainty estimation
 plot(fitted, what='thresholds')
-
 }
 

@@ -9,8 +9,9 @@ This is a wrapper function that calls fitting functions and threshold functions
 and returns an object of class \code{phenopix}. 
 }
 \usage{
-greenProcess(ts, fit, threshold=NULL, plot=TRUE, which='light', uncert=FALSE, nrep=100, 
-    envelope='quantiles', quantiles=c(0.1, 0.9), ...)
+greenProcess(ts, fit, threshold=NULL, plot=TRUE, which='light', 
+  uncert=FALSE, nrep=100, 
+  envelope='quantiles', quantiles=c(0.1, 0.9), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -94,6 +95,7 @@ Gianluca Filippa <gian.filippa@gmail.com>
 
 \examples{
 data(bartlett2009.filtered)
-fitted <- greenProcess(bartlett2009.filtered, 'klosterman', 'klosterman', uncert=TRUE, nrep=5)
+fitted <- greenProcess(bartlett2009.filtered, 'klosterman', 
+  'klosterman', uncert=TRUE, nrep=5)
 }
 

@@ -10,8 +10,9 @@ matters. Available filters are 'night', 'max', 'spline', 'blue' and
 'mad'. See details for further explaination. 
 }
 \usage{
-autoFilter(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn = FALSE, brt = 'bri.av', na.fill = TRUE, 
-  filter = c("night", "spline", "max"), filter.options = NULL, plot = TRUE, ...)
+autoFilter(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn = FALSE, 
+  brt = 'bri.av', na.fill = TRUE, filter = c("night", "spline", "max"), 
+  filter.options = NULL, plot = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -102,13 +103,16 @@ Papale et al.
 \examples{
 data(bartlett2009)
 ## with raw.dn ==TRUE and column position for chromatic coordinates
-filtered.data <- autoFilter(bartlett2009, dn=c(5:7), filter=c('night', 'spline', 'max'),
-                                         filter.options=NULL, raw.dn=TRUE)
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
+  filter=c('night', 'spline', 'max'),
+  filter.options=NULL, raw.dn=TRUE)
 ## same as before but returning unfilled data 
-filtered.data <- autoFilter(bartlett2009, dn=c(5:7), filter=c('night', 'spline', 'max'),
-                                         filter.options=NULL, na.fill=FALSE, raw.dn=TRUE)
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
+  filter=c('night', 'spline', 'max'),
+  filter.options=NULL, na.fill=FALSE, raw.dn=TRUE)
 ## all filters in action (check the plot)
-filtered.data <- autoFilter(bartlett2009, dn=c(5:7), filter=c('night','blue', 'mad','spline', 'max'),
-                                         filter.options=NULL, raw.dn=TRUE)
+filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
+  filter=c('night','blue', 'mad','spline', 'max'),
+  filter.options=NULL, raw.dn=TRUE)
 }
 

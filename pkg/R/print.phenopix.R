@@ -1,6 +1,6 @@
 print.phenopix  <- function(x, ...) {
     attr.retr <- attributes(x)
-    cat('\n #### imageRy time series processing ####\n')
+    cat('\n #### phenopix time series processing ####\n')
     cat(paste0('\nFITTING: ', toupper(attr.retr$fit), '\n'))
     cat('\nPREDICTED VALUES:\n')
     print(summary(x$fit$fit$predicted))  
