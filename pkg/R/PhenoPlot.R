@@ -1,12 +1,11 @@
 PhenoPlot <-
 function(data, metrics, add=FALSE, show.uncert=TRUE, ...) {
-	if (!is.data.frame(metrics)) metrics <- metrics[[1]]
+	if (class(metrics)=='list') metrics <- metrics[[1]]
 		## recognise series and understand wheter uncert exists
 		## data is output from [fitname]Fit functions
 		## metrics is output from PhenoExtract function
 		if (is.null(dim(metrics))) uncert=FALSE else uncert=TRUE
 	if (!add) plot(data$fit$predicted, type='n', ...)
-
 	if (show.uncert & !is.null(data$uncertainty)) for (a in 1:dim(data$uncertainty$predicted)[2]) lines(data$uncertainty$predicted[,a], col='grey')
 		lines(data$fit$predicted, lwd=2)
 			mean.y <- mean(data$fit$predicted, na.rm=T)
@@ -32,5 +31,4 @@ if (!uncert) {
 		for (a in the.seq) arrows(metrics[1,a], ylons[a], metrics[3,a], ylons[a], code=3, angle=90, length=0.1, 
 			lwd=2, col=colors[a])
 	}
-
 }

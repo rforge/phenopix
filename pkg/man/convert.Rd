@@ -10,16 +10,19 @@ named \code{time} retrived from index(x). It is designed for those unfamiliar wi
 objects. 
 }
 \usage{
-convert(x)
+convert(x, year=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
 An object of class \code{ts} or \code{zoo}
 }
+  \item{year}{
+A vector of length one with year of observation. If provided, a column with time in POSIX format is also returned
+}
 } 
 \details{
-An object of class \code{data.frame} is returned with a column \code{time} at the end of the table.  
+An object of class \code{data.frame} is returned with a column \code{doy} and optionally \code{time} at the end of the table.  
 }
 
 \value{

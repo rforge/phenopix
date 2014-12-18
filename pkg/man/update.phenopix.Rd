@@ -16,7 +16,7 @@ Update method for objects of class \code{phenopix}
 An object of class \code{phenopix}
 }
   \item{threshold}{
-One between \code{spline}, \code{derivatives}, \code{klosterman}, \code{gu} 
+One between 'spline', 'derivatives', 'klosterman', 'gu' 
 }
   \item{envelope}{
 If left blank is recicled from original fitting. See \code{PhenoExtract}

@@ -12,12 +12,14 @@ do in a ROI-based analysis, except that uncertainty cannot be estimated
 }
 \usage{
 spatialGreen(spatial.list, fit, threshold, filters='default',
-  parallel=TRUE, save=FALSE, path=NULL)
+  parallel=TRUE, save=FALSE, path=NULL, assign=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{spatial.list}{
-  A list as in output from extractVIs with option \code{spatial} = TRUE. 
+  A list as in output from extractVIs with option \code{spatial} = TRUE. If you have extracted 
+  more than one ROI, \code{spatial.list} must contain data from one single of such ROIs. Hence you have to run a spatialGreen
+  analysis for each of your ROIs separately.  
 %%     ~~Describe \code{img.path} here~~
 }
   \item{fit}{
@@ -52,7 +54,12 @@ spatialGreen(spatial.list, fit, threshold, filters='default',
 %%     ~~Describe \code{plot} here~~
 }
   \item{path}{
-  Path where to save your .Rdata for each pixel if save=TRUE. 
+  Path where to save your .Rdata for each pixel if save=TRUE. If you have processed multiple ROIs remember to
+  provide  
+%%     ~~Describe \code{plot} here~~
+}
+  \item{assign}{
+  If TRUE (default) an object is assigned and returned. This may lead to memory saturation.
 %%     ~~Describe \code{plot} here~~
 }
 
@@ -71,9 +78,14 @@ do in a ROI-based analysis, except that uncertainty cannot be estimated
 (since it would be too computationally intense). 
 For pixel-based analysis, it is recommended to use rather low resolution images. Consider 
 that a full image of 640 x 428 pixels in which you extract a ROI that is about half the image 
-leads to about 70k pixels. 70k pixels are in turn processed in about 16 days on a rather fast 
-computer. Parallel computation makes the effort lower.   
-
+leads to about 70k pixels. 70k pixels are in turn processed in about 72 hours on a rather fast 
+computer with parallelization (on three cores). Parallel computation makes the effort lower. 
+Another issue of this function is that it generates large objects which saturate the CPU memory. 
+Therefore, it can be usefull to set \code{save} == TRUE, provide a \code{path} where to store each pixel's analysis
+and not to assign the object (\code{assign} == FALSE). In this way, computation remains quite fast because 
+memory and swap (unix systems) is saved. A function \code{extactParameters} is designed to extract fitting parameters
+from \code{spatialGreen} output be it from an assigned R object or from the folder where temporary RData from each pixel 
+are stored.   
 }
 
 \author{

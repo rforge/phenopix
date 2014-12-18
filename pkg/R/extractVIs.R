@@ -17,7 +17,7 @@ extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, b
   
   roi.pos <- which(names(roi.data) %in% roi.name == TRUE)
   
-  files <-list.files(path=img.path,pattern = ".jpg")
+  files <-list.files(path=img.path)
   n_files <-length(files)  
   
   if (spatial==FALSE) {
@@ -141,5 +141,5 @@ names(VI.data) <- roi.name
   save(VI.data,file=paste(vi.path,begin,'_', end, '_', 'VI.data.spatial.Rdata',sep=''))  
 }
 }
-return(VI.data)	 
+invisible(VI.data)	 
 }

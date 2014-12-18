@@ -1,4 +1,5 @@
-spatialGreen <- function(spatial.list, fit, threshold, filters='default',parallel=TRUE, save=FALSE, path=NULL) {
+spatialGreen <- function(spatial.list, fit, threshold, filters='default',parallel=TRUE, save=FALSE, path=NULL, assign=TRUE) {
+    if (save==FALSE & assign ==FALSE) stop('Arguments save and assign cannot be both FALSE!')
     time <- as.POSIXct(names(spatial.list))
     npixels <- dim(spatial.list[[1]])[1]
     # fitting.list <- NULL
@@ -27,10 +28,11 @@ spatialGreen <- function(spatial.list, fit, threshold, filters='default',paralle
     if (save) {
         filename <- paste0(path, '/fitted.tmp', a, '.Rdata')
         save(fitted.tmp, file=filename)
+        if (!assign) fitted.tmp <- NULL
     }
     # fitting.list[[a]] <- fitted.tmp
     print(round(a/npixels*100,2))
-    return(fitted.tmp)
+#     return(fitted.tmp)
 }
 stopCluster(cl)
 ## if a fit is performed, there is a fit dataframe
@@ -83,5 +85,5 @@ stopCluster(cl)
 }
 # final.container <- fitting.list
 }
-return(fitting.list)
+if (!assign) return(fitting.list)
 }

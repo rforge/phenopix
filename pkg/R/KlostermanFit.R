@@ -6,7 +6,8 @@ function (ts, which='light',uncert=FALSE, nrep=100) {
 	if (which=='light') the.function <- FitDoubleLogKlLight
 	# if (which=='complete') the.function <- FitDoubleLogKlosterman	
 	fit <- the.function(ts)
-	residuals <- as.vector(fit$predicted)-ts 
+##	residuals <- as.vector(fit$predicted)-ts 
+	residuals <- ts - as.vector(fit$predicted)
 	# min.res <- min(residuals, na.rm=T)
 	# max.res <- max(residuals, na.rm=T)
 	sd.res <- sd(residuals, na.rm=TRUE)
@@ -21,13 +22,14 @@ function (ts, which='light',uncert=FALSE, nrep=100) {
 		predicted.df <- data.frame(matrix(ncol=nrep, nrow=length(ts)))
 		params.df <- data.frame(matrix(ncol=nrep, nrow=length(fit$params)))
 		for (a in 1:nrep) {
-			noise <- rnorm(length(ts), 0, sd.res)*(res3*3)
+			noise <- runif(length(ts), -sd.res, sd.res)		
 			sign.noise <- sign(noise)
 			pos.no <- which(sign.res!=sign.noise)
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]
 			# noise <- runif(length(ts), min.res, max.res)*(res3*3)			
 			# randomly sample
 			noised <- ts + noise
+			points(noised, col='grey', pch=20)
 			fit.tmp <- the.function(noised)
 			predicted.df[,a] <- fit.tmp$predicted
 			params.df[,a] <- fit.tmp$params

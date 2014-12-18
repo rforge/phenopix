@@ -5,7 +5,7 @@
 Update pixels included in a ROI of different pixel size
 }
 \description{
-This function allows to apply an already drawn ROI to the same image but with lower resolution.   
+This function allows to apply an already drawn ROI to the same image but with different resolution.   
 }
 \usage{
 updateROI(old.roi.path, new.path.img.ref, new.roi.path)

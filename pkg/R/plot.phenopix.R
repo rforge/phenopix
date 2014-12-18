@@ -10,6 +10,7 @@ plot.phenopix <- function(x, y=NULL, what='all',main=NULL, ...) {
 } else {
     if (what=='fitting') PhenoPlot(x$fit, metrics=NA, add=TRUE)
     if (what=='params') {
+        if (is.null(x$uncertainty.df)) stop('Uncertainty was not estimated. Try what=all')
     	parameters <- as.data.frame(t(extract(x, what='curve.params.uncert')))
     	true.params <- extract(x, what='curve.params')
     	par(mfrow=c(1, length(parameters)), mar=c(5,0,4,0), oma=c(0,4,0,2))

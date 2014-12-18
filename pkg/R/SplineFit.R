@@ -2,7 +2,7 @@ SplineFit <-
 function (ts, uncert=FALSE, nrep=100, df.factor=0.05) {
 	fit <- smooth.spline(ts, df=df.factor*length(ts))
 
-	residuals <- as.vector(fit$y)-ts 
+	residuals <- ts - as.vector(fit$y) 
 	# res.range <- range(residuals, na.rm=TRUE)
 	# mean.res <- mean(residuals, na.rm=TRUE)
 	## let df factor vary between 0.005 and 0.05
@@ -16,7 +16,7 @@ function (ts, uncert=FALSE, nrep=100, df.factor=0.05) {
 	df.factor2 <- seq(0.01, df.factor, length.out=nrep)
 		predicted.df <- data.frame(matrix(ncol=nrep, nrow=length(ts)))
 		for (a in 1:nrep) {
-			noise <- rnorm(length(ts), 0, sd.res)*(res3*3)
+			noise <- runif(length(ts), -sd.res, sd.res)*(res3*3)
 			sign.noise <- sign(noise)
 			pos.no <- which(sign.res!=sign.noise)
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]

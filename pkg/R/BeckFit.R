@@ -1,7 +1,7 @@
 BeckFit <-
 function (ts, uncert=FALSE, nrep=100) {
 	fit <- FitDoubleLogBeck(ts)
-	residuals <- as.vector(fit$predicted)-ts 
+	residuals <- ts - as.vector(fit$predicted) 
 	# res.range <- range(residuals, na.rm=TRUE)
 	# mean.res <- mean(residuals, na.rm=TRUE)
 	sd.res <- sd(residuals, na.rm=TRUE)
@@ -14,7 +14,7 @@ if (uncert) {
 		predicted.df <- data.frame(matrix(ncol=nrep, nrow=length(ts)))
 		params.df <- data.frame(matrix(ncol=nrep, nrow=length(fit$params)))
 		for (a in 1:nrep) {
-			noise <- rnorm(length(ts), 0, sd.res)*(res3*3)
+			noise <- runif(length(ts), -sd.res, sd.res)
 			sign.noise <- sign(noise)
 			pos.no <- which(sign.res!=sign.noise)
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]
