@@ -12,7 +12,7 @@ region of interest of a jpeg image.
 }
 \usage{
 extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL, 
-  plot = TRUE, begin = NULL, spatial = FALSE)
+  plot = TRUE, begin = NULL, spatial = FALSE, date.code)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -46,6 +46,10 @@ extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL,
   If spatial = FALSE (the default) vegetation indexes are averaged over the entire ROI. If set to FALSE 
   red green and blue digital numbers are extracted for each pixel in the ROI. Since this option builds large 
   objects, it is recommended to use it on resized images, so to have to more than 10k pixels in the ROI.  
+ %     ~~Describe \code{plot} here~~
+}
+  \item{date.code}{
+  Provide the (quoted) exact format of the date embedded in your image names. Example: your image file picked on June 14th, 2012 at 12 pm is named "site_12.06_14.1200.png", than your date.code will be "yy.mm_dd.HHMM". 
  %     ~~Describe \code{plot} here~~
 }
 

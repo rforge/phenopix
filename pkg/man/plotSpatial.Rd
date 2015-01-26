@@ -8,7 +8,8 @@ Plot pixel-based analysis results from spatialGreen and extractParameters functi
 This function allows to plot results from pixel-based analysis of a seasonal ensemble of images in one or multiple rois.   
 }
 \usage{
-plotSpatial(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01, 0.99), plot.density=TRUE, digits=0) 
+plotSpatial(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01, 0.99), plot.density=TRUE, digits=0, upadj=NULL,
+                        rightadj=NULL) 
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -40,6 +41,14 @@ plotSpatial(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01,
 }
   \item{digits}{
   Integer specifying decimal number for key labels
+} 
+  \item{upadj}{
+  Integer specifying how to handle the upper margin of the density plot, relevant only if plot.density == TRUE. 
+  It can be manually changed according to the shape of your plotting window.  
+} 
+  \item{rightadj}{
+  Integer specifying how to handle the right margin of the density plot, relevant only if plot.density == TRUE.
+  It can be manually changed according to the shape of your plotting window.  
 } 
 
 }

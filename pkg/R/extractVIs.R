@@ -1,4 +1,4 @@
-extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, begin=NULL, spatial=FALSE) {		
+extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, begin=NULL, spatial=FALSE, date.code) {		
   
   # require(extract.date)
   # source('/home/edo/workspace/R_script/WEBCAM/WEBCAM_v2/extract.date.R')
@@ -30,7 +30,8 @@ extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, b
     #loop trough images
     for (img in seq(n_files)) {
       ## check date and begin
-      temp.date <- extractDateFilename(files[img])
+      temp.date <- extractDateFilename(files[img], date.code)
+      if (is.na(temp.date)) stop('Something wrong in your date!')
       if (!is.null(begin)) {
       beg.date <- as.POSIXct(begin, origin='1970-01-01')
       if (beg.date >= temp.date) next()
@@ -105,7 +106,7 @@ VI.data <- list()
     #loop trough images
     for (img in seq(n_files)) {
       ## check date and begin
-      temp.date <- extractDateFilename(files[img])
+      temp.date <- extractDateFilename(files[img], date.code)
       if (!is.null(begin)) {
       beg.date <- as.POSIXct(begin, origin='1970-01-01')
       if (beg.date >= temp.date) next()

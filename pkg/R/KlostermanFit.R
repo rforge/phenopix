@@ -29,7 +29,6 @@ function (ts, which='light',uncert=FALSE, nrep=100) {
 			# noise <- runif(length(ts), min.res, max.res)*(res3*3)			
 			# randomly sample
 			noised <- ts + noise
-			points(noised, col='grey', pch=20)
 			fit.tmp <- the.function(noised)
 			predicted.df[,a] <- fit.tmp$predicted
 			params.df[,a] <- fit.tmp$params

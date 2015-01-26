@@ -1,5 +1,5 @@
-plotSpatial <- function(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01, 0.99), plot.density=TRUE, digits=0) {
-# png('/home/gian/Desktop/tmp_gian_work/smaller/VI/UD.spatial.png', width=1000, height=800, pointsize=24)
+plotSpatial <- function(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01, 0.99), plot.density=TRUE, digits=0, upadj=NULL,
+                        rightadj=NULL) {
 img <- readJPEG(image.path)
 roi.data <- NULL
 load(roi.data.path)
@@ -10,21 +10,29 @@ density.data <- x
 quantiles <- quantile(x, probs, na.rm=TRUE)
 x[which(x < quantiles[1])] <- NA
 x[which(x > quantiles[2])] <- NA
+## scale 0-1
 scaled <- (x-min(x,na.rm=TRUE))/(max(x, na.rm=TRUE)-min(x, na.rm=TRUE))
+## retrieve na positions for th image
 pos.na <- which(is.na(scaled))
+## put 0.5 to NA, otherwise it does not plot
 scaled[is.na(scaled)] <- 0.5
 if (!is.null(roi.name)) roi.data.tmp <- roi.data[[roi.name]] else roi.data.tmp <- roi.data[[1]]
 pixels.in <- roi.data.tmp$pixels.in.roi
 pos.pix.roi <- which(pixels.in$pip == 1)
 ratio <- dim(img)[1]/dim(img)[2]
 par(mar=c(rep(1,4)))
+## first plot the image complete
 plot(0, type = "n", xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, ylab='', xlab='')
 rasterImage(img, xleft = 0, ybottom = 0, xright = 1, 
             ytop = ratio)
+## then make it green in the roi pixels (by setting
+## to 0 blue and red channel)
 grey.image <- img
 grey.image[,,1][pos.pix.roi] <- 0
 grey.image[,,3][pos.pix.roi] <- 0
+## and green tone (scaled) in the green channel
 grey.image[,,2][pos.pix.roi] <- scaled
+## and in na pos we put 1, i.e. the pixeln NA is white
 grey.image[,,1][pos.pix.roi][pos.na] <- 1
 grey.image[,,2][pos.pix.roi][pos.na] <- 1
 grey.image[,,3][pos.pix.roi][pos.na] <- 1
@@ -82,8 +90,10 @@ at.ax <- pretty(x.leg)
 at.labs <- round(seq(min(unlist(x), na.rm=T), max(unlist(x), na.rm=T), length.out=length(at.ax)), digits)
 axis(4, at=at.ax, labels=at.labs)
 if (plot.density) {
+    if (!is.null(upadj)) low.mar=21+upadj else low.mar=21
+    if (!is.null(rightadj)) right.mar=8.5+rightadj else right.mar=8.5    
 layout(1)
-par(new=TRUE, mar=c(21,1.7,1,8.5))
+par(new=TRUE, mar=c(low.mar,1.7,1,right.mar))
 plot(density(na.omit(density.data)),main='', axes=FALSE, xlab='')
 abline(v=quantiles, lty=2)
 axis(1, cex.axis=0.8)
