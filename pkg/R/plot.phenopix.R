@@ -1,9 +1,9 @@
 plot.phenopix <- function(x, y=NULL, what='all',main=NULL, ...) {
 	attr.retr <- attributes(x)
     title <- paste0('fit: ', toupper(attr.retr$fit), '  -  thresholds: ', toupper(attr.retr$threshold))
-    if (what=='all') {
     plot(x$data,...)
     if (is.null(main)) title(main=title) else title(main=main) 
+    if (what=='all') {
     if (is.null(x$metrics)) PhenoPlot(x$fit, metrics=NA, add=TRUE) else {
     PhenoPlot(x$fit, x$metrics, add=TRUE)
 }
