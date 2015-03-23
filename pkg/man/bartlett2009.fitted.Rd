@@ -6,7 +6,7 @@ Bartlett 2009 dataset with computed fitting and uncertainty estimation
 %%   ~~ data name/kind ... ~~
 }
 \description{
-A list of predicted values, euqation parameters and their uncertainty from 
+A list of predicted values, equation parameters and their uncertainty from 
 fitting the Klosterman equation to Bartlett 2009 filtered data. 
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }

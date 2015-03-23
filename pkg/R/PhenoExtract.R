@@ -36,7 +36,12 @@ if (method=='klosterman') {
 if (is.null(data$uncertainty) | uncert==FALSE) {
 	returned <- the.function(single.data, fit=data$fit, uncert=uncert, breaks=breaks) 
 } else {
-	thresholds <- apply(uncertainty.data, 2, the.function, uncert=TRUE, fit=data$fit, breaks=breaks) 
+	thresholds <- NULL
+	for (a in 1:dim(uncertainty.data)[2]) {
+		tmp.column <- the.function(uncertainty.data[,a], fit=data$fit, uncert=uncert, breaks=breaks)
+		thresholds <- cbind(thresholds, tmp.column)
+	}
+	# thresholds <- apply(uncertainty.data, 2, the.function, uncert=TRUE, fit=data$fit, breaks=breaks) 
 if (envelope=='quantiles') returned <- as.data.frame(apply(thresholds, 1, function(x) quantile(x, c(quantiles[1], .5, quantiles[2]), na.rm=TRUE)))
 if (envelope=='min-max') {
 	returned <- as.data.frame(apply(thresholds, 1, function(x) rbind(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))))
@@ -49,6 +54,7 @@ if (plot) {
 if (uncert) {
 	thresholds.t <- t(thresholds)
 	names(thresholds.t) <- names(returned)
+	rownames(thresholds.t) <- NULL
 	ret2 <- list(metrics=returned, unc.df=as.data.frame(thresholds.t))
 } else ret2 <- list(metrics=returned, unc.df=NULL)
 

@@ -62,20 +62,4 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \code{\link{KlostermanFit}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
-\examples{
-data(bartlett2009.filtered)
-fit <- FitDoubleLogKlHeavy(bartlett2009.filtered) ## about 10 seconds
-## check fitting
-plot(bartlett2009.filtered)
-lines(fit$predicted, col='red')
-## look at fitting parameters
-fit$params
-## look at fitting equation, where t is time
-fit$formula
-## recalculate fitted values from the formula
-library(zoo)
-t <- index(bartlett2009.filtered)
-predicted <- eval(fit$formula, envir=as.list(fit$params))
-## and add them to the existing plot (hopefully it returns the same as red line!)
-lines(t, predicted, col='blue', lwd=2)
-}
+

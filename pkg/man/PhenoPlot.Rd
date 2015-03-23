@@ -45,18 +45,3 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \seealso{
 \code{\link{PhenoExtract}}
 }
-
-\examples{
-data(bartlett2009.filtered)
-## a fit: you could try instead of GuFit, BeckFit, KlostermanFit
-fitted <- KlostermanFit(bartlett2009.filtered, which='light')
-klos.ths <- PhenoExtract(fitted, method='klosterman')
-PhenoPlot(fitted, klos.ths)
-## may be added to an existing plot
-plot(bartlett2009.filtered)
-PhenoPlot(fitted, klos.ths, add=TRUE)
-## PhenoPlot accepts a number of options from function plot
-PhenoPlot(fitted, klos.ths, main='Klosterman fit and thresholds', 
-	ylab='GCC', xlab='DOY')
-
-}

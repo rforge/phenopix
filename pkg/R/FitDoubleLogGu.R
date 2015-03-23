@@ -24,7 +24,10 @@ function(
     ## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}}
 
     ) {
-
+        if (class(index(x))[1]=='POSIXct') {
+        doy.vector <- as.numeric(format(index(x), '%j'))
+        index(x) <- doy.vector
+    }
   n <- length(na.omit(x))
 
 

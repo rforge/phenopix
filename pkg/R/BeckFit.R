@@ -1,5 +1,9 @@
 BeckFit <-
 function (ts, uncert=FALSE, nrep=100) {
+	if (class(index(ts))[1]=='POSIXct') {
+		doy.vector <- as.numeric(format(index(ts), '%j'))
+		index(ts) <- doy.vector
+	}
 	fit <- FitDoubleLogBeck(ts)
 	residuals <- ts - as.vector(fit$predicted) 
 	# res.range <- range(residuals, na.rm=TRUE)

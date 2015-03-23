@@ -13,4 +13,5 @@ print.phenopix  <- function(x, ...) {
 } else cat(paste0('\nTHRESHOLDS: ', toupper(attr.retr$threshold),'\n'))
     print(x$metrics)  
     cat(paste0('\nUNCERTAINTY: ', toupper(attr.retr$uncert), '\n N of replications = ', attr.retr$nrep), '\n')
+    cat(paste0('\nHYDROLOGICAL DAY OF YEAR: ', attr.retr$hydro, '\n'))
 }

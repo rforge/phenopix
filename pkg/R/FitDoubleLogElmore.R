@@ -30,7 +30,10 @@ function(
 	## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}} 
 
 ) {
-
+		if (class(index(x))[1]=='POSIXct') {
+		doy.vector <- as.numeric(format(index(x), '%j'))
+		index(x) <- doy.vector
+	}
 	# linear interpolation if all equal
 	# if (AllEqual(x)) {
 	# 	if (return.par) return(rep(NA, 7))

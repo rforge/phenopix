@@ -1,5 +1,9 @@
 SplineFit <-
 function (ts, uncert=FALSE, nrep=100, df.factor=0.05) {
+		if (class(index(ts))[1]=='POSIXct') {
+		doy.vector <- as.numeric(format(index(ts), '%j'))
+		index(ts) <- doy.vector
+	}
 	fit <- smooth.spline(ts, df=df.factor*length(ts))
 
 	residuals <- ts - as.vector(fit$y) 

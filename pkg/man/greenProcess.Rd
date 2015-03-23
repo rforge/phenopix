@@ -11,7 +11,7 @@ and returns an object of class \code{phenopix}.
 \usage{
 greenProcess(ts, fit, threshold=NULL, plot=TRUE, which='light', 
   uncert=FALSE, nrep=100, 
-  envelope='quantiles', quantiles=c(0.1, 0.9), ...)
+  envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -53,6 +53,16 @@ Number of replications for the uncertainty estimation.
   Quantiles to be calculated if envelope='quantiles'. The notation is the same as 
   to specify quantiles in the \code{quantile} function, i.e. to get 10th and 90th 
   percentile, use c(0.1, 0.9).  
+}
+
+  \item{hydro}{
+Hydro determines how days of the year are computed. If hydro = FALSE (default) January 1st is DOY 1. 
+If hydro = TRUE October 1st is day 1. This option has been introduced for two purposes. 
+First, for water limited or high temperature limited boreal ecosystems (with summer 
+dormant season) to process a seasonal trajectory with winter peak. Second, for ecosystems 
+in the australian emisphere. If hydro = TRUE all metrics concerned with a day of year must be back 
+converted in order to get actual day of year. Conversions and back conversions can be performed 
+with the function \code{doy2hydrodoy}.    
 }
 
   \item{\dots}{

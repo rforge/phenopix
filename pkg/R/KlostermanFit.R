@@ -1,5 +1,9 @@
 KlostermanFit <-
 function (ts, which='light',uncert=FALSE, nrep=100) {
+		if (class(index(ts))[1]=='POSIXct') {
+		doy.vector <- as.numeric(format(index(ts), '%j'))
+		index(ts) <- doy.vector
+	}
 	# decide which function to use and fix names
 	# later to be removed
 	if (which=='heavy') the.function <- FitDoubleLogKlHeavy

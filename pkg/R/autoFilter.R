@@ -18,11 +18,11 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
 .blue.filter <-function(data, act.opts, name='gcc', ...) {
     threshold <- act.opts$threshold
     ## compute daily standard deviation
-    tmp.daily.sd <- aggregate(data$bcc, by=list(data$doy), FUN=sd, na.rm=T)
+    tmp.daily.sd <- aggregate(data$bcc, by=list(data$daily.time), FUN=sd, na.rm=T)
     ## compute daily mean
-    tmp.daily.mean <- aggregate(data$bcc, by=list(data$doy), FUN=mean, na.rm=T)
+    tmp.daily.mean <- aggregate(data$bcc, by=list(data$daily.time), FUN=mean, na.rm=T)
     ##set a threshold on 5% of daily standard deviation
-    sd_med_BI_all_season<-quantile(tmp.daily.sd[,2],probs=threshold,na.rm=TRUE,type=3)
+    sd_med_BI_all_season <- quantile(tmp.daily.sd[,2],probs=threshold,na.rm=TRUE,type=3)
     ##if images are daily, daily sd is NA, so filter is set at 0.5
     if (is.na(sd_med_BI_all_season)) {sd_med_BI_all_season<-0.5}
     ##be larger when sd_med_BI_all_season is too small
@@ -36,9 +36,9 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
         act.doy <- i
         act.lower <- lower.env[tmp.daily.sd[,1]==act.doy]
         act.upper <- upper.env[tmp.daily.sd[,1]==act.doy]
-        act.subset <- data[data$doy==act.doy, ]
+        act.subset <- data[data$daily.time==act.doy, ]
         act.subset$flag <- ifelse(act.subset$bcc>act.lower & act.subset$bcc<act.upper, 'keep', 'discard')
-        data$flag[data$doy==act.doy] <- act.subset$flag
+        data$flag[data$daily.time==act.doy] <- act.subset$flag
     }
     ## clean filtered data
     filtered <- data[,name]
@@ -77,7 +77,7 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
     quantile(x, 0.9, na.rm=T)
     }
     computed.frequency <- median(diff(as.numeric(data$time)), na.rm=T)
-    data.per.day <- median(aggregate(data[,1], by=list(as.numeric(as.character(data$doy))), FUN=length)[,2], na.rm=T)
+    data.per.day <- median(aggregate(data[,1], by=list(data$daily.time), FUN=length)[,2], na.rm=T)
     true.window <- data.per.day*w
     new.max <- rollapply(data[,name], FUN=.max.fun, width=true.window, fill='extend')
  return(new.max)   
@@ -93,8 +93,10 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
     data.in.the.loop <- data[!is.na(data[,name]),]
     for(iii in 1:loop_spline){
         if (length(unique(data.in.the.loop$time))>=10) {
-            splineVI<-predict(smooth.spline(data.in.the.loop$time, data.in.the.loop[,name], df=length(unique(data.in.the.loop$doy))/df_set))
-            d1spline <- predict(smooth.spline(data.in.the.loop$time, data.in.the.loop[,name], df=length(unique(data.in.the.loop$doy))/df_set), d=1)
+            splineVI<-predict(smooth.spline(data.in.the.loop$time, data.in.the.loop[,name], 
+                df=length(unique(data.in.the.loop$doy))/df_set))
+            d1spline <- predict(smooth.spline(data.in.the.loop$time, data.in.the.loop[,name], 
+                df=length(unique(data.in.the.loop$doy))/df_set), d=1)
             abs.d1 <- abs(d1spline$y/max(d1spline$y))*1.5
             ## check data removed from spline
             time.tmp <- as.POSIXct(splineVI$x, origin='1970-01-01')
@@ -137,6 +139,7 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
     if (length(pos.POSIX)==0) stop("Missing POSIX vector in your data")
     if (length(pos.POSIX)>1) warning("Multiple POSIX vectors: only the first one is used")
     time <- data[,pos.POSIX[1]]
+    daily.time <- format(time, '%Y-%m-%d')
     ## check and erase duplicated timestamp
     if (length(which(duplicated(time)))!=0) {
         pos.dupl <- which(duplicated(time))
@@ -144,7 +147,7 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
         data <- data[-pos.dupl,]
         }
     time.range <- length(unique(format(time, '%Y')))
-    if (time.range>1) warning('Filtering is optimized for a single year of data: use results with caution')
+    # if (time.range>1) warning('Filtering is optimized for a single year of data: use results with caution')
     doy <- format(time, "%j")
     ## retrieve data vectors if raw.dn = TRUE
     if (raw.dn==TRUE) {
@@ -158,7 +161,7 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
         rgb.indices <- data[,dn]
         }
     names(rgb.indices) <- c('rcc', 'gcc', 'bcc')
-    new.data <- data.frame(time, doy, rgb.indices, brt)
+    new.data <- data.frame(time, daily.time, doy, rgb.indices, brt)
     ##recursive filtering
     filter.names <- paste(filter, '.filtered', sep='')
     name.to.filter <- c('gcc', paste(filter,'.filtered', sep=''))
@@ -194,9 +197,9 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
         ## colname <- paste(act.filter, '.filtered', sep='')
     }
     ## daily aggregation by doy, return median
-    pos.time <- which(names(filtered.data)=='time' | names(filtered.data)=='doy')
-    daily.agg <- aggregate(filtered.data[,-pos.time], by=list(filtered.data$doy), FUN='median', na.rm=T)
-    names(daily.agg)[1] <- 'doy'    
+    pos.time <- which(names(filtered.data)=='time' | names(filtered.data)=='doy' | names(filtered.data)=='daily.time')
+    daily.agg <- aggregate(filtered.data[,-pos.time], by=list(filtered.data$daily.time), FUN='median', na.rm=T)
+    names(daily.agg)[1] <- 'time'    
     ## end of the filtering loop
     if (plot==TRUE) {
         ##define palette
@@ -212,12 +215,12 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
     }
         legend('bottomright', col=act.palette, legend=legend.names, pch=16, bty='n')
     }
-    doys <- as.numeric(as.character(daily.agg$doy))
-    pos.days <- which(names(daily.agg)=='doy')
-    reduced <- daily.agg[,-pos.days]
+    time.def <- as.POSIXct(as.character(daily.agg$time))
+    pos.time <- which(names(daily.agg)=='time')
+    reduced <- daily.agg[,-pos.time]
     ##aggregate daily
-    if (na.fill) to.return <- na.approx(zoo(reduced, order.by=doys), maxgap=10) else {
-        to.return <- zoo(reduced, order.by=doys)
+    if (na.fill) to.return <- na.approx(zoo(reduced, order.by=time.def), maxgap=10) else {
+        to.return <- zoo(reduced, order.by=time.def)
     }
         return(to.return)
 

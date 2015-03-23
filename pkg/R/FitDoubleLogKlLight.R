@@ -16,6 +16,10 @@ function(
     ...
 
     ) {
+            if (class(index(x))[1]=='POSIXct') {
+        doy.vector <- as.numeric(format(index(x), '%j'))
+        index(x) <- doy.vector
+    }
     n <- length(x)
     avg <- mean(x, na.rm=TRUE)
     mx <- max(x, na.rm=TRUE)

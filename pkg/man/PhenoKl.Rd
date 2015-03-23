@@ -76,13 +76,3 @@ in a for loop cycling in  the uncertainty dataframe columns.
 \code{\link{PhenoExtract}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
-\examples{
-data(bartlett2009.filtered)
-## a fit: you could try instead of GuFit, BeckFit, KlostermanFit
-fitted <- KlostermanFit(bartlett2009.filtered, which='light')
-par(mfrow=c(2,1), mar=c(0,0,0,0), oma=c(5,4,4,4))
-plot(bartlett2009.filtered, type='p')
-lines(fitted$fit$predicted)
-gu.trs <- PhenoKl(fitted$fit$params, fit=fitted$fit, uncert=FALSE)
-PhenoPlot(fitted, gu.trs) 
-}

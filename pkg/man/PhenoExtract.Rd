@@ -89,20 +89,4 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \code{\link{PhenoGu}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
-\examples{
-data(bartlett2009.filtered)
-## a fit: you could try instead of GuFit, BeckFit, KlostermanFit
-fitted <- GuFit(bartlett2009.filtered)
-## extract thresholds according to various methods
-par(mfrow=c(5,1), mar=c(0,0,0,0), oma=c(5,4,4,4))
-plot(bartlett2009.filtered, type='p')
-lines(fitted$fit$predicted)
-spl.trs <- PhenoExtract(fitted, method='spline', 
-  plot=TRUE, uncert=FALSE, yaxt='n')
-axis(4) 
-der.trs <- PhenoExtract(fitted, method='derivatives', plot=TRUE) 
-klos.trs <- PhenoExtract(fitted, method='klosterman', plot=TRUE, yaxt='n')
-axis(4) 
-gu.trs <- PhenoExtract(fitted, method='gu', plot=TRUE) 
-}
 

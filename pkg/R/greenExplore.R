@@ -1,7 +1,7 @@
 greenExplore <- function(x) {
     ## a function to extract rmse
     .rmse <- function(fit) {
-        if (class(fit)=='try-error') return(NA) else {
+        if (class(fit)=='try-error' | all(is.na(extract(fit, 'fitted')))) return(NA) else {
             summary(lm(extract(fit, what='fitted') ~ extract(fit, what='data')))$sigma
         }
     }

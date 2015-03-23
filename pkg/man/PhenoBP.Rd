@@ -49,12 +49,3 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \code{\link{PhenoExtract}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
-\examples{
-data(bartlett2009.fitted)
-data(bartlett2009.filtered)
-par(mfrow=c(3,1), mar=c(0,4,0,2), oma=c(5,0,4,0))
-plot(bartlett2009.filtered, type='p')
-lines(bartlett2009.fitted$fit$predicted)
-PhenoBP(bartlett2009.filtered, ylab='Break points on raw data')
-PhenoBP(bartlett2009.fitted$fit$predicted, ylab='Break points on fitting curve')
-}

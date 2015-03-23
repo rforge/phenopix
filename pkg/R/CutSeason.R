@@ -1,5 +1,6 @@
 CutSeason <-
 function(data, plot=FALSE) {
+    if (!is.null(dim(data))) stop('provide an univariate zoo object')
     x.vect <- index(data)
     y.vect <- as.vector(data)
     data2 <- data.frame(x=x.vect, y=y.vect)
@@ -10,6 +11,7 @@ function(data, plot=FALSE) {
     plot(x.vect, y.vect, type='l')
     point.cut <- locator()
     breaks <- floor(point.cut$x)
+    if (class(x.vect)[1]=='POSIXct') breaks <- as.POSIXct(round(as.POSIXct(breaks, origin='1970-01-01'), 'day'))
     matches <- which(x.vect %in% breaks == TRUE)
     # if (add.tails==TRUE) matches <- c(0, matches, 365)
     cuts <- cut(x.vect, breaks)

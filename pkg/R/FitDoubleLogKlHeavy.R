@@ -29,7 +29,10 @@ function(
     ## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}}
 
     ) {
-
+        if (class(index(x))[1]=='POSIXct') {
+        doy.vector <- as.numeric(format(index(x), '%j'))
+        index(x) <- doy.vector
+    }
 ## integrare da tmp.R per la funzione best.nls e tutte le sue dipendenze
 ## la teniamo strutturata così e aggiustiamo i dati in modo che funzioni
 
