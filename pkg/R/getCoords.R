@@ -8,7 +8,7 @@ getCoords <- function(image) {
 	image.target <- readJPEG(image)
 	image.width <- dim(image.target)[2]
 	image.height <- dim(image.target)[1]
-	.plotImage(image.target, main='Crop from topleft to the point you chose')
+	.plotImage(image.target, main='Click the bottomright margin of the rectangle you want to crop')
 	vertices <- locator()
 	x.cuts <- c(0,round(vertices$x))
 	y.cuts <- c(0, image.height-round(vertices$y))

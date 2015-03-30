@@ -1,7 +1,7 @@
 Package: phenopix
 Type: Package
 Title: Process digital images of a vegetation cover
-Version: 1.0
+Version: 1.1
 Date: 2014-08-21
 Author: Gianluca Filippa, Edoardo Cremonese, Mirco Migliavacca 
 Maintainer: Gianluca Filippa <gian.filippa@gmail.com>
