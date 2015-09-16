@@ -17,7 +17,7 @@ extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, b
   
   roi.pos <- which(names(roi.data) %in% roi.name == TRUE)
   
-  files <-list.files(path=img.path)
+  files <-list.files(path=img.path,recursive=TRUE)
   n_files <-length(files)  
   
   if (spatial==FALSE) {

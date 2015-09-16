@@ -13,7 +13,7 @@ trainOCR <- function(image.path, nsamples=100) {
 	}
 	names(number.list) <- numbers
 	image.list <- list.files(image.path, full.names=TRUE)
-	image.samples <- sample(image.list, nsamples)
+	image.samples <- sample(image.list, nsamples, replace=TRUE)
 	a <- 1
 	while(any(is.na(number.list))) {
 		image.large <- readJPEG(image.samples[a])

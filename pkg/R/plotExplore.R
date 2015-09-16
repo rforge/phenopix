@@ -49,7 +49,7 @@ plotExplore <- function(x) {
     par(new=TRUE, mfrow=c(1,1), oma=rep(0,4))
     plot(0, type='n', axes=FALSE, ylab='', xlab='')
     xmean <- mean(par('usr')[1:2])
-    mtext('DIFFERENT TRESHOLD METHODS', 1, line=-2.2, font=2)
+    mtext('DIFFERENT PHENOPHASE METHODS', 1, line=-2.2, font=2)
     arrows(xmean-0.3,-1.02,xmean+0.3,-1.02)
     arrows(1.37, -0.7, 1.37, 0.7)
     mtext('DIFFERENT FITTING METHODS', 4, line=-2, font=2)

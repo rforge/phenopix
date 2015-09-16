@@ -13,7 +13,7 @@ function(
 
     tout = t,
 ### time steps of output (can be used for interpolation)
-
+    hessian = FALSE,
     ...
 ### further arguments (currently not used)
 
@@ -27,6 +27,8 @@ function(
         if (class(index(x))[1]=='POSIXct') {
         doy.vector <- as.numeric(format(index(x), '%j'))
         index(x) <- doy.vector
+        t <- index(x)
+        tout <- t
     }
   n <- length(na.omit(x))
 
@@ -48,22 +50,6 @@ function(
         b2 <- par[7]
         c1 <- par[8]
         c2 <- par[9]
-        ## m1 <- par[1]
-        ## m2 <- par[2]
-        ## m3 <- par[3]
-        ## m4 <- par[4]
-        ## m5 <- par[5]
-        ## m6 <- par[6]
-        ## m7 <- par[7]
-        ## m3l <- m3 / m4
-        ## m4l <- 1 / m4
-        ## m5l <- m5 / m6
-        ## m6l <- 1 / m6
-        # xpred <- offset + (ampl/(1+q1*exp(-b1*(t-m1)))^v1 -
-        #          ampl/(1+q2*exp(-b2*(t-m2)))^v2)
-        ## xpred <- m1 + (m2 - m7 * t) * ( (1/(1 + exp((m3l - t)/m4l))) - (1/(1 + exp((m5l - t)/m6l))) )
-                                        # term a1*t + b1 must be close to the minimum
-                                        # term a2*t^2 + b2*t + c must be close to seasonal ampl
     xpred <- y0 + (a1/(1+exp(-(t-t01)/b1))^c1) - (a2/(1+exp(-(t-t02)/b2))^c2)
         # xpred <- (a1*t + b1) + (a2*t^2 + b2*t + c)*(1/(1+q1*exp(-B1*(t-m1)))^v1 - 1/(1+q2*exp(-B2*(t-m2)))^v2)
         return(xpred)
@@ -105,7 +91,7 @@ function(
         )
 
                                         # estimate parameters for double-logistic function starting at different priors
-    opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000))   # fit from different prior values
+    opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000), hessian=hessian)   # fit from different prior values
     opt.df <- cbind(cost=unlist(llply(opt.l, function(opt) opt$value)), convergence=unlist(llply(opt.l, function(opt) opt$convergence)), ldply(opt.l, function(opt) opt$par))
     ## opt.df <- opt.df[-which(opt.df$V2<0),]
     best <- which.min(opt.df$cost)
@@ -113,7 +99,7 @@ function(
                                         # test for convergence
     if (opt.df$convergence[best] == 1) { # if maximum iterations where reached - restart from best with more iterations
         opt <- opt.l[[best]]
-        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=1500))
+        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=1500), hessian=hessian)
         prior <- rbind(prior, opt$par)
         xpred <- .doubleLog(opt$par, t)
     } else if (opt.df$convergence[best] == 0) {
@@ -140,8 +126,37 @@ function(
     }
  xpred.out <- zoo(xpred, order.by=t)
 names(opt$par) <- c('y0', 'a1', 'a2', 't01', 't02', 'b1', 'b2', 'c1', 'c2')
+
+   if (hessian) {
+        opt.new <- optim(opt$par, .error, x=x, t=t, method="BFGS", hessian=TRUE
+                         ## ,              
+                         ## control=list('fnscale'=-1)
+                         )
+        .qr.solve <- function(a, b, tol = 1e-07, LAPACK=TRUE) {
+        if (!is.qr(a)) 
+        a <- qr(a, tol = tol, LAPACK=LAPACK)
+    nc <- ncol(a$qr)
+    nr <- nrow(a$qr)
+    if (a$rank != min(nc, nr)) 
+        stop("singular matrix 'a' in solve")
+    if (missing(b)) {
+        if (nc != nr) 
+            stop("only square matrices can be inverted")
+        b <- diag(1, nc)
+    }
+    res <- qr.coef(a, b)
+    res[is.na(res)] <- 0
+    res        
+        }
+        vc <- .qr.solve(opt$hessian)
+        npar <- nrow(vc)
+        s2 <- opt.df$cost[best]^2 / (n - npar)
+        std.errors <- sqrt(diag(vc) * s2)     # standard errors
+        }
+
 fit.formula <- expression(y0 + (a1/(1+exp(-(t-t01)/b1))^c1) - (a2/(1+exp(-(t-t02)/b2))^c2))
 output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
+if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
 return(output)
     # if (return.par) {
     #     ## names(opt$par) <- paste("m", 1:7, sep="")

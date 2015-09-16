@@ -10,7 +10,7 @@ See FitDoubleLogElmore from package greenbrown
 }
 \usage{
 FitDoubleLogElmore(x, t = index(x), tout = t, 
-    return.par = FALSE, plot = FALSE, ...)
+    return.par = FALSE, plot = FALSE, hessian=FALSE, ...)
 }
 
 \arguments{
@@ -30,6 +30,9 @@ FitDoubleLogElmore(x, t = index(x), tout = t,
 }
   \item{plot}{
   Currenlty unused. 
+}  
+\item{hessian}{
+  Currently unimplemented. 
 }
   \item{\dots}{
   Further arguments currenlty unused. 

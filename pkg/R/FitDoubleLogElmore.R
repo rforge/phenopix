@@ -20,6 +20,7 @@ function(
 	plot = FALSE,
 	### plot iterations for logistic fit?
 	
+	hessian = FALSE,
 	...
 	### further arguments (currently not used)
 	
@@ -33,6 +34,8 @@ function(
 		if (class(index(x))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(x), '%j'))
 		index(x) <- doy.vector
+		t <- index(x)
+		tout <- t
 	}
 	# linear interpolation if all equal
 	# if (AllEqual(x)) {
@@ -62,13 +65,13 @@ function(
 		m4 <- par[4]
 		m5 <- par[5]
 		m6 <- par[6]
-		m7 <- par[7]
-		
-		# m3l <- m3 / m4
-		# m4l <- 1 / m4
-		# m5l <- m5 / m6
-		# m6l <- 1 / m6
-		xpred <- m1 + (m2 - m7 * t) * ( (1/(1 + exp(((m3/m4) - t)/(1/m4)))) - (1/(1 + exp(((m5/m6) - t)/(1/m6)))) )
+		m7 <- par[7]		
+		m3l <- m3 / m4
+		m4l <- 1 / m4
+		m5l <- m5 / m6
+		m6l <- 1 / m6
+		# xpred <- m1 + (m2 - m7 * t) * ( (1/(1 + exp(((m3/m4) - t)/(1/m4)))) - (1/(1 + exp(((m5/m6) - t)/(1/m6)))) )
+		xpred <- m1 + (m2 - m7 * t) * ( (1/(1 + exp((m3l - t)/m4l))) - (1/(1 + exp((m5l - t)/m6l))) )
 		return(xpred)
 	}
 	
@@ -82,24 +85,25 @@ function(
 	
 	# inital parameters to fit double-logistic function
 	doy <- quantile(t, c(0.25, 0.75), na.rm=TRUE)
-	prior <- rbind(
-		c(mn, mx-mn, doy[1], 0.5, doy[2], 0.5, 0.002),
-		c(mn, mx-mn, doy[2], 0.5, doy[2], 0.5, 0.002),
-		c(mn, mx-mn, doy[1], 0.5, doy[2], 0.5, 0.05),
-		c(mn, mx-mn, doy[2], 0.5, doy[1], 0.5, 0.05)
-	)
+
+    prior <- rbind(
+        c(mn, mx-mn, 200, 1.5, 300, 1.5, 0.002),
+        c(mn, mx-mn, 100, 0.5, 200, 0.9, 0.002),
+        c(mn, mx-mn, 50, 0.5, 300, 1.2, 0.05),
+        c(mn, mx-mn, 300, 2, 350, 2.5, 0.05)
+    )
 
 	if (plot) plot(t, x)
 	
 	# estimate parameters for double-logistic function starting at different priors
-	opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=100))	# fit from different prior values
+	opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=100), hessian=hessian)	# fit from different prior values
 	opt.df <- cbind(cost=unlist(llply(opt.l, function(opt) opt$value)), convergence=unlist(llply(opt.l, function(opt) opt$convergence)), ldply(opt.l, function(opt) opt$par))
 	best <- which.min(opt.df$cost) 
 	
 	# test for convergence
 	if (opt.df$convergence[best] == 1) { # if maximum iterations where reached - restart from best with more iterations
 		opt <- opt.l[[best]]
-		opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700))
+		opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700), hessian=hessian)
 		prior <- rbind(prior, opt$par)
 		xpred <- .doubleLog(opt$par, t)			
 	} else if (opt.df$convergence[best] == 0) {
@@ -127,8 +131,38 @@ function(
 
 xpred.out <- zoo(xpred, order.by=t)
 names(opt$par) <- paste("m", 1:7, sep="")
+
+    if (hessian) {
+        opt.new <- optim(opt$par, .error, x=x, t=t, method="BFGS", hessian=TRUE
+                         ## ,              
+                         ## control=list('fnscale'=-1)
+                         )
+        .qr.solve <- function(a, b, tol = 1e-07, LAPACK=TRUE) {
+        if (!is.qr(a)) 
+        a <- qr(a, tol = tol, LAPACK=LAPACK)
+    nc <- ncol(a$qr)
+    nr <- nrow(a$qr)
+    if (a$rank != min(nc, nr)) 
+        stop("singular matrix 'a' in solve")
+    if (missing(b)) {
+        if (nc != nr) 
+            stop("only square matrices can be inverted")
+        b <- diag(1, nc)
+    }
+    res <- qr.coef(a, b)
+    res[is.na(res)] <- 0
+    res        
+        }
+
+        vc <- .qr.solve(opt$hessian)
+        npar <- nrow(vc)
+        s2 <- opt.df$cost[best]^2 / (n - npar)
+        std.errors <- sqrt(diag(vc) * s2)     # standard errors
+        }
+
 fit.formula <- expression(m1 + (m2 - m7 * t) * ( (1/(1 + exp(((m3/m4) - t)/(1/m4)))) - (1/(1 + exp(((m5/m6) - t)/(1/m6))))))
 output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
+if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
 return(output)	
 	# if (return.par) {
 	# 	names(opt$par) <- paste("m", 1:7, sep="")

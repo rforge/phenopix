@@ -10,7 +10,7 @@ This function fits a double logistic curve to observed values using the
  function as described in Klosterman et al. (2014), equation 7. 
 }
 \usage{
-FitDoubleLogKlLight(x, t = index(x), tout = t, ...)
+FitDoubleLogKlLight(x, t = index(x), tout = t, hessian=FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,6 +25,10 @@ FitDoubleLogKlLight(x, t = index(x), tout = t, ...)
   For gapfilling pourposes, a vector of time steps at which the function
   can be predicted. 
 }
+  \item{hessian}{
+  Currently unimplemented. 
+}
+
   \item{\dots}{
   Further arguments currenlty unused. 
 }

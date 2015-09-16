@@ -11,7 +11,7 @@ A function to fit a double logisitic function to a vector according to Beck et a
  See \code{greenProcess}
 }
 \usage{
-BeckFit(ts, uncert = FALSE, nrep = 100)
+BeckFit(ts, uncert = FALSE, nrep = 1000, error='average')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,8 +23,12 @@ BeckFit(ts, uncert = FALSE, nrep = 100)
   Should uncertainty be estimated?
 }
   \item{nrep}{
-  Number of relications to estimate uncertainty, defaults to 100. 
+  Number of relications to estimate uncertainty, defaults to 1000. 
 }
+  \item{error}{
+  How to handle error 
+}
+
 }
 \details{
  The function estimates parameters of the double logistic equation from

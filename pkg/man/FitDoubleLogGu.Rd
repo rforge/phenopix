@@ -9,7 +9,7 @@
  function as described in Gu et al. (2003). 
 }
 \usage{
-FitDoubleLogGu(x, t = index(x), tout = t, ...)
+FitDoubleLogGu(x, t = index(x), tout = t, hessian=FALSE,  ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,6 +24,10 @@ FitDoubleLogGu(x, t = index(x), tout = t, ...)
   For gapfilling pourposes, a vector of time steps at which the function
   can be predicted. 
 }
+  \item{hessian}{
+  Currently unimplemented. 
+}
+
   \item{\dots}{
   Further arguments currenlty unused. 
 }

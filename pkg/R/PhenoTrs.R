@@ -64,8 +64,8 @@ function(
 		# scale annual time series to 0-1
 		ratio <- (x - mn) / ampl
 		trs <- 0.5
-		trs.low <- trs - 0.05
-		trs.up <- trs + 0.05
+		trs.low <- trs - 0.1
+		trs.up <- trs + 0.1
 	}
 	if (approach == "Trs") {
 		ratio <- x

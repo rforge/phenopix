@@ -11,7 +11,7 @@ See FitDoubleLogBeck from package greenbrown
 }
 \usage{
 FitDoubleLogBeck(x, t = index(x), tout = t, weighting = TRUE, 
-    return.par = FALSE, plot = FALSE, ...)
+    return.par = FALSE, plot = FALSE, hessian=FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -33,6 +33,9 @@ FitDoubleLogBeck(x, t = index(x), tout = t, weighting = TRUE,
 }
   \item{plot}{
   Currently unused. 
+}
+  \item{hessian}{
+  Currently unimplemented. 
 }
   \item{\dots}{
   Further arguments currenlty unused. 

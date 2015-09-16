@@ -12,13 +12,15 @@ function(
 ### time steps
 
     tout = t,
-
+   hessian = FALSE,
     ...
 
     ) {
             if (class(index(x))[1]=='POSIXct') {
         doy.vector <- as.numeric(format(index(x), '%j'))
         index(x) <- doy.vector
+        t <- index(x)
+        tout <- t
     }
     n <- length(x)
     avg <- mean(x, na.rm=TRUE)
@@ -91,7 +93,7 @@ function(
     # if (plot) plot(t, x)
 
                                         # estimate parameters for double-logistic function starting at different priors
-    opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000))   # fit from different prior values
+    opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000), hessian=hessian)   # fit from different prior values
     opt.df <- cbind(cost=unlist(llply(opt.l, function(opt) opt$value)), convergence=unlist(llply(opt.l, function(opt) opt$convergence)), ldply(opt.l, function(opt) opt$par))
     ## remove negative exponents for q1 and 2, var 10 and 11
     pos <- which(opt.df$V6 < 0 | opt.df$V7 < 0)
@@ -104,7 +106,7 @@ function(
                                         # test for convergence
     if (opt.df$convergence[best] == 1) { # if maximum iterations where reached - restart from best with more iterations
         opt <- opt.l[[best]]
-        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700))
+        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700), hessian=hessian)
         prior <- rbind(prior, opt$par)
         xpred <- .doubleLog(opt$par, t)
     } else if (opt.df$convergence[best] == 0) {
@@ -131,8 +133,37 @@ function(
     }
 xpred.out <- zoo(xpred, order.by=t)
 names(opt$par) <- c('a1', 'a2', 'b1', 'b2', 'c', 'B1', 'B2', 'm1', 'm2', 'q1', 'q2', 'v1', 'v2') 
+
+   if (hessian) {
+        opt.new <- optim(opt$par, .error, x=x, t=t, method="BFGS", hessian=TRUE
+                         ## ,              
+                         ## control=list('fnscale'=-1)
+                         )
+        .qr.solve <- function(a, b, tol = 1e-07, LAPACK=TRUE) {
+        if (!is.qr(a)) 
+        a <- qr(a, tol = tol, LAPACK=LAPACK)
+    nc <- ncol(a$qr)
+    nr <- nrow(a$qr)
+    if (a$rank != min(nc, nr)) 
+        stop("singular matrix 'a' in solve")
+    if (missing(b)) {
+        if (nc != nr) 
+            stop("only square matrices can be inverted")
+        b <- diag(1, nc)
+    }
+    res <- qr.coef(a, b)
+    res[is.na(res)] <- 0
+    res        
+        }
+        vc <- .qr.solve(opt$hessian)
+        npar <- nrow(vc)
+        s2 <- opt.df$cost[best]^2 / (n - npar)
+        std.errors <- sqrt(diag(vc) * s2)     # standard errors
+        }
+
 fit.formula <- expression((a1*t + b1) + (a2*t^2 + b2*t + c)*(1/(1+q1*exp(-B1*(t-m1)))^v1 - 1/(1+q2*exp(-B2*(t-m2)))^v2))
 output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
+if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
 return(output)
     # if (return.par) {
     #     ## names(opt$par) <- paste("m", 1:7, sep="")

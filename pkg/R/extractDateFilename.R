@@ -1,7 +1,8 @@
 extractDateFilename <- function(filename, date.code){	  	
  	pos.underscore <- gregexpr('_', filename)[[1]][1]	
  	filename.cleaned <- substr(filename, pos.underscore+1, nchar(filename))
- 	separated <- str_split(filename.cleaned, '')[[1]][-1]
+ 	# separated <- str_split(filename.cleaned, '')[[1]][-1]
+ 	separated <- str_split(filename.cleaned, '')[[1]]	
  	year.char <- ifelse(length(gregexpr('y', date.code)[[1]]) == 2, '%y', '%Y')
  	year.pos <- unlist(gregexpr('y', date.code)[[1]])
  	year.val <- paste(separated[year.pos], collapse='')
