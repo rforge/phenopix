@@ -9,6 +9,7 @@ spatialGreen <- function(filtered.data, fit, threshold, ncores='all', log.file=N
     cl <- makeCluster(cores)
     registerDoParallel(cl)
     if (!is.null(log.file)) writeLines(c(""), paste(log.file, "log.txt", sep='/'))
+        a <- NULL
         fitting.list <- foreach(a=1:npixels, .packages=c('phenopix', 'zoo')) %dopar% {
             if (!is.null(log.file)) {
                 sink(paste(log.file, "log.txt", sep='/'), append=TRUE)  

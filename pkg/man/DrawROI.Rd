@@ -11,7 +11,8 @@ on a jpeg image.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-DrawROI(path_img_ref, path_ROIs, nroi = 1, roi.names)
+DrawROI(path_img_ref, path_ROIs, nroi = 1, 
+	roi.names, file.type='.jpg')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,6 +30,10 @@ The number of ROIs you want to draw.
 }
   \item{roi.names}{
   A character vector with ROI names.
+%%     ~~Describe \code{roi.names} here~~
+}
+  \item{file.type}{
+  It must match the syntax of your file extension (e.g. .jpg, .JPG, .JPEG). Multiple types are allowed by concatenation with c().  
 %%     ~~Describe \code{roi.names} here~~
 }
 }

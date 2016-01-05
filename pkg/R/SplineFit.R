@@ -1,5 +1,5 @@
 SplineFit <-
-function (ts, uncert=FALSE, nrep=100, df.factor=0.05) {
+function (ts, uncert=FALSE, nrep=100, df.factor=0.05, ncores='all') {
 		if (class(index(ts))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(ts), '%j'))
 		index(ts) <- doy.vector

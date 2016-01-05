@@ -16,7 +16,8 @@ extract(x, what)
 An object of class \code{phenopix}
 } 
   \item{what}{
- One between "data", "fitted", "metrics", "metrics.uncert", "curve.params", "curve.uncert", "curve.params.uncert"
+ One between "data", "fitted", "metrics", "metrics.uncert", "curve.params", 
+ "curve.uncert", "curve.params.uncert"
 }
 }
 \details{

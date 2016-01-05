@@ -46,7 +46,7 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \examples{
 data(bartlett2009.filtered)
 fitted <- greenProcess(bartlett2009.filtered, 'klosterman', 
-  'klosterman', plot=FALSE, uncert=TRUE, nrep=5)
+  'klosterman', plot=FALSE, uncert=TRUE, nrep=5, ncores=2)
 plot(fitted) ## default
 ## slightly more elaborated, with suppression of default title 
 plot(fitted, type='p', pch=20, ylab='GCC', xlab='DOY', col='grey', 

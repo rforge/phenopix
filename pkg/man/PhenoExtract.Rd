@@ -6,11 +6,11 @@ A function that extracts phenological thresholds
 }
 \description{
 This function extracts phenological thresholds according to different methods. 
-Methods include 'spline', 'derivatives', 'klosterman', 'gu'. See details for the 
+Methods include 'trs', 'derivatives', 'klosterman', 'gu'. See details for the 
 computation of each method.  
 }
 \usage{
-PhenoExtract(data, method = "spline", uncert = FALSE, 
+PhenoExtract(data, method = "trs", uncert = FALSE, 
   breaks = 3, envelope = "quantiles", 
   quantiles = c(0.1, 0.9), plot = TRUE, ...)
 }
@@ -21,7 +21,7 @@ PhenoExtract(data, method = "spline", uncert = FALSE,
   KlostermanFit, ElmoreFit, BeckFit. 
 }
   \item{method}{
-  One between 'spline', 'derivatives', 'klosterman', 'gu'.
+  One between 'trs', 'derivatives', 'klosterman', 'gu'.
 }
   \item{uncert}{
   Should uncertainty on thresholds be computed? It requires that uncertainty 
@@ -50,11 +50,13 @@ Currently unused%%     ~~Describe \code{breaks} here~~
   \item{\dots}{
   For the plotting function, a number of parameters from generic \code{plot} 
   can be specified. See examples. 
+  Additionally, a further option to 'trs' method calling \code{PhenoTrs} is provided: by setting a trs argument. 
+  The default for trs is 0.5, meaning that the phases sos (start of season) and eos (end of season) will be set when gcc reaches 50\% of maximum on the increasing (sos) and decreasing (eos) seasonal trajectory.  
 }
 }
 \details{
-This is a wrapper function that calls 'PhenoTrs' for method='spline', 'PhenoDeriv' 
-for method='deriatives', (from package greenbrown) or 'PhenoGu' for method='Gu',
+This is a wrapper function that calls 'PhenoTrs' for method='trs', 'PhenoDeriv' 
+for method='derivatives', (from package greenbrown) or 'PhenoGu' for method='Gu',
  and 'PhenoKl' for method='klosterman' from this package. Please see help of the 
  single functions for details on the calculation of thresholds.  
 }

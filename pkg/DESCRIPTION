@@ -1,12 +1,12 @@
 Package: phenopix
 Type: Package
-Title: Process digital images of a vegetation cover
-Version: 2.0.1
-Date: 2015-09-18
-Author: Gianluca Filippa, Edoardo Cremonese, Mirco Migliavacca 
+Title: Process Digital Images of a Vegetation Cover
+Version: 2.1
+Date: 2015-12-24
+Author: Gianluca Filippa, Edoardo Cremonese, Mirco Migliavacca, Marta Galvagno, Matthias Folker, Andrew D. Richardson, Enrico Tomelleri 
 Maintainer: Gianluca Filippa <gian.filippa@gmail.com>
-Description: The package provides functions to process digital images, depict greennes index trajectories and extract relevant phenological stages. 
+Description: A collection of functions to process digital images, depict greennes index trajectories and extract relevant phenological stages. 
 Depends: R (>= 2.15.3) 
-Imports: zoo, plyr, SDMTools, jpeg, stringr (>= 1.0.0), bcp, strucchange, parallel, foreach, doParallel, iterators, gtools
+Imports: zoo, plyr, SDMTools, jpeg, stringr (>= 1.0.0), bcp, strucchange, parallel, foreach, doParallel, iterators, gtools, raster, sp
 License: GPL-2
 LazyLoad: yes

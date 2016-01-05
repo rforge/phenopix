@@ -1,5 +1,9 @@
-extractDateFilename <- function(filename, date.code){	  	
- 	pos.underscore <- gregexpr('_', filename)[[1]][1]	
+extractDateFilename <- function(filename, date.code){
+	n.underscores <- length(gregexpr('_', filename)[[1]])
+	n.underscores.date.code <- length(gregexpr('_', date.code)[[1]])
+	if (n.underscores.date.code==1 & gregexpr('_', date.code)[[1]][1]==-1) n.underscores.date.code <- 0
+	pos.underscores <- gregexpr('_', filename)[[1]] 	  	
+ 	pos.underscore <- gregexpr('_', filename)[[1]][n.underscores-n.underscores.date.code]	
  	filename.cleaned <- substr(filename, pos.underscore+1, nchar(filename))
  	# separated <- str_split(filename.cleaned, '')[[1]][-1]
  	separated <- str_split(filename.cleaned, '')[[1]]	
@@ -33,5 +37,6 @@ extractDateFilename <- function(filename, date.code){
 	# 	mm<- str_c(as.character(sub_string[11]),as.character(sub_string[12]))	
 	# 	}
  #    date<-as.POSIXct(strptime(paste(yyyyMMDD,' ',HH,':',mm,sep=''),"%Y-%m-%d %H:%M"),'GMT')
+ 	if (is.na(date)) stop(paste('Date extraction from',filename,'failed'))
 	return(date)	
 }

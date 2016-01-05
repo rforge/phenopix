@@ -31,7 +31,8 @@ Should a diagnostic plot be returned?
 }
 \details{
 Threshold extraction is performed according to breakpoint analysis. 
-The function used is \code{breakpoints} from package \code{strucchange}. 
+The function used is 
+\code{breakpoints} from package \code{strucchange}. 
 The function also computes a confidence interval by a call to \code{confint()}. 
 Uncertainty analysis is therefore different from the approach used for other 
 thresholds (see e.g. \code{PhenoGu}). Unlike the other thresholding approaches, 
@@ -48,4 +49,14 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \seealso{
 \code{\link{PhenoExtract}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+
+\examples{
+\dontrun{
+data(bartlett2009.filtered)
+breaks <- PhenoBP(bartlett2009.filtered, breaks=4)
+mean.breaks.doy <- as.numeric(format(as.POSIXct(t(breaks[2,]), 
+	origin='1970-01-01'), '%j'))
+mean.breaks.doy
+}
 }

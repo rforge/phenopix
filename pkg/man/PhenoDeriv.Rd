@@ -10,7 +10,8 @@ See PhenoDeriv from package greenbrown
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-PhenoDeriv(x, formula = NULL, uncert = FALSE, params = NULL, breaks, ...)
+PhenoDeriv(x, formula = NULL, uncert = FALSE, 
+	params = NULL, breaks, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +22,7 @@ A named vector with the parameters of the equation used to fit the data.
   Inherited from previous steps of the process.
 }
   \item{uncert}{
-  Should uncertainty be estimated?
+Currently unused
 }
   \item{params}{
   Inherited from previous steps of the process.  
@@ -35,3 +36,15 @@ Currently unused
 }
 }
 
+\examples{
+data(bartlett2009.fitted)
+derivatives.phenophases <- PhenoDeriv(
+	x=bartlett2009.fitted$fit$predicted, fit=bartlett2009.fitted$fit
+	)
+plot(bartlett2009.fitted$fit$predicted)
+abline(v=derivatives.phenophases[c(1:2,4)], col=palette())
+mtext(names(derivatives.phenophases[c(1:2,4)]), 
+	at=derivatives.phenophases[c(1:2,4)], 
+	line=-2, 
+	col=palette()[1:3])
+}

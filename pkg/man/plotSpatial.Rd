@@ -8,8 +8,8 @@ Plot pixel-based analysis results from spatialGreen and extractParameters functi
 This function allows to plot results from pixel-based analysis of a seasonal ensemble of images in one or multiple rois.   
 }
 \usage{
-plotSpatial(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01, 0.99), plot.density=TRUE, digits=0, upadj=NULL,
-                        rightadj=NULL) 
+plotSpatial(data, param, roi.data.path, image.path, 
+  probs=c(0.01, 0.99), ...) 
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -23,32 +23,15 @@ plotSpatial(data, param, roi.data.path, roi.name=NULL, image.path, probs=c(0.01,
   \item{roi.data.path}{
   	The complete path where to find roi data (e.g. '/home/me/folderROI/roi.data.RData')
 }
-  \item{roi.name}{
-  	Supply the name (character string) of the roi you want to plot, as named in your roi.data.RData. If NULL 
-  	and your roi.data.RData contains only one ROI, than this one is choosen. If you have more than one roi but 
-  	you want to plot only one, then specify here the name of the roi. 
-}
   \item{image.path}{
   	A complete path of an image you want to use as background for plotting your data. E.g. 
   	'/home/me/images/my_site201406061200.jpg'
 }
-
   \item{probs}{
   	Two numbers in the range [0,1] passed to \code{quantile()} function to remove tails of the distribution for the plot.  
 }
-  \item{plot.density}{
-  	If TRUE a density distribution of values is plotted in the upper plotting region
-}
-  \item{digits}{
-  Integer specifying decimal number for key labels
-} 
-  \item{upadj}{
-  Integer specifying how to handle the upper margin of the density plot, relevant only if plot.density == TRUE. 
-  It can be manually changed according to the shape of your plotting window.  
-} 
-  \item{rightadj}{
-  Integer specifying how to handle the right margin of the density plot, relevant only if plot.density == TRUE.
-  It can be manually changed according to the shape of your plotting window.  
+  \item{\dots}{
+Additional arguments passed to the function \code{plot}
 } 
 
 }

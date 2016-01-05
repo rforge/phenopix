@@ -3,7 +3,8 @@ print.phenopix  <- function(x, ...) {
     cat('\n #### phenopix time series processing ####\n')
     cat(paste0('\nFITTING: ', toupper(attr.retr$fit), '\n'))
     cat('\nPREDICTED VALUES:\n')
-    print(summary(x$fit$fit$predicted))  
+    predicted <- x$fit$fit$predicted
+    print(summary(predicted))  
     cat('\nFITTING EQUATION:\n')
     print(x$fit$fit$formula)  
    cat('\nFITTING PARAMETERS:\n')

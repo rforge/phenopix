@@ -2,7 +2,7 @@
 \alias{hydrodoy}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Returns default options for function \code{autoFilter}. 
+Converts from and to hydrological day of year 
 }
 \description{
 Converts from and to hydrological day of year

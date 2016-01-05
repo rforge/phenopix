@@ -11,7 +11,7 @@ function(
 	approach = c("White", "Trs"), 
 	### approach to be used to calculate phenology metrics. 'White' (White et al. 1997) or 'Trs' for simple threshold.
 	
-	trs = NULL,
+	trs = 0.5,
 	### threshold to be used for approach "Trs"
 	
 	min.mean = 0.1,
@@ -29,7 +29,7 @@ function(
 	### further arguments (currently not used)
 	
 	##references<< 
-	## White MA, Thornton PE, Running SW (1997) A continental phenology model for monitoring vegetation responses to interannual climatic variability. Global Biogeochem Cycles 11:217–234.
+	## White MA, Thornton PE, Running SW (1997) A continental phenology model for monitoring vegetation responses to interannual climatic variability. Global Biogeochem Cycles 11:217-234.
 		
 	##seealso<<
 	## \code{\link{Phenology}}
@@ -63,7 +63,7 @@ function(
 	if (approach == "White") {
 		# scale annual time series to 0-1
 		ratio <- (x - mn) / ampl
-		trs <- 0.5
+		# trs <- 0.5
 		trs.low <- trs - 0.1
 		trs.up <- trs + 0.1
 	}

@@ -45,3 +45,9 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \seealso{
 \code{\link{PhenoExtract}}
 }
+\examples{
+data(bartlett2009.fitted)
+klosterman.phenophases <- PhenoExtract(bartlett2009.fitted, 
+	method='klosterman', uncert=TRUE, plot=FALSE)
+PhenoPlot(bartlett2009.fitted, klosterman.phenophases$unc.df)
+}

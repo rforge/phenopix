@@ -1,5 +1,5 @@
-PrintROI <- function(path_img_ref,path_ROIs,which='all',col) {	      
-    file<-list.files(path=path_img_ref,pattern = ".jpg")
+PrintROI <- function(path_img_ref,path_ROIs,which='all',col, file.type='.jpg') {	      
+    file<-list.files(path=path_img_ref,pattern = file.type)
     # img<-readJpeg(paste(path_img_ref,file,sep=""))
     img<-readJPEG(paste(path_img_ref,file,sep=""))
     ## convert values from 0:1 to 0:255

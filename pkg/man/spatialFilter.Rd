@@ -8,7 +8,8 @@ Explore all possible fitting and theshold methods from the package phenopix
 This function allows to fast compute all fitting and thresholding methods on a given greennes time series.   
 }
 \usage{
-spatialFilter(spatial.list, filter=c('night','spline', 'max'), filter.options=NULL, 
+spatialFilter(spatial.list, filter=c('night','spline', 'max'), 
+  filter.options=NULL, 
     ncores='all',log.file=NULL)
 }
 %- maybe also 'usage' for other objects documented here.

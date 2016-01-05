@@ -12,7 +12,8 @@ region of interest of a jpeg image.
 }
 \usage{
 extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL, 
-  plot = TRUE, begin = NULL, spatial = FALSE, date.code)
+  plot = TRUE, begin = NULL, spatial = FALSE, date.code, 
+  npixels=1, file.type='.jpg', bind=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -49,8 +50,20 @@ extractVIs(img.path, roi.path, vi.path = NULL, roi.name = NULL,
  %     ~~Describe \code{plot} here~~
 }
   \item{date.code}{
-  Provide the (quoted) exact format of the date embedded in your image names. Example: your image file picked on June 14th, 2012 at 12 pm is named "site_12.06_14.1200.png", than your date.code will be "yy.mm_dd.HHMM". 
+  Provide the (quoted) exact format of the date embedded in your image names. Example: your image file picked on June 14th, 2012 at 12 pm is named 
+  "site_12.06_14.1200.png", than your date.code will be "yy.mm_dd.HHMM". 
  %     ~~Describe \code{plot} here~~
+}
+  \item{npixels}{
+  This argument allows to sample the images at lower resolution. Specify by an integer the number of pixels you want to aggregate (e.g. if npixels=2), a square of 2 pixels per side is aggregated in one pixel.  
+}
+  \item{file.type}{
+  It must match the syntax of your file extension (e.g. .jpg, .JPG, .JPEG). Multiple types are allowed by concatenation with c().  
+%%     ~~Describe \code{roi.names} here~~
+}
+  \item{bind}{
+If TRUE and argument begin is defined, then new VI.data are binded to already existing data and overwritten, after checking for duplicated records 
+(and returning a warning in case there are).  
 }
 
 }

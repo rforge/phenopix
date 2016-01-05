@@ -46,7 +46,7 @@ suited to work with a dataframe in output from \code{ExtractVIs}
   \item{filter.options}{
   If NULL filter.options defaults to set values, otherwise they must be
   specified in a named list. Filter options are designed to work with a wide range of data, 
-  the user must change them with caution.  
+  the user must change them with caution. See \code{get.options} to change default filter options.  
 }
   \item{plot}{
     If TRUE a dignostic plot of the different filtering effects is
@@ -89,6 +89,7 @@ suited to work with a dataframe in output from \code{ExtractVIs}
   filtering. Colnames for filtered data have the same name as the
   applied filter. 
 }
+
 \references{
 Sonnentag et al. 
 
@@ -103,6 +104,7 @@ Papale et al.
 \examples{
 data(bartlett2009)
 ## with raw.dn ==TRUE and column position for chromatic coordinates
+par(mfrow=c(3,1), oma=c(5,4,4,2), mar=rep(0,4))
 filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
   filter=c('night', 'spline', 'max'),
   filter.options=NULL, raw.dn=TRUE)
@@ -114,5 +116,7 @@ filtered.data <- autoFilter(bartlett2009, dn=c(5:7),
 filtered.data <- autoFilter(bartlett2009, dn=c(5:7), 
   filter=c('night','blue', 'mad','spline', 'max'),
   filter.options=NULL, raw.dn=TRUE)
+## check filter names
+names(filtered.data)
 }
 

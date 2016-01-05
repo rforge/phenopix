@@ -31,7 +31,7 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \examples{
 data(bartlett2009.filtered)
 fitted <- greenProcess(bartlett2009.filtered, 'klosterman', 
-  'klosterman', uncert=TRUE, plot=FALSE, nrep=5)
+  'klosterman', uncert=TRUE, plot=FALSE, nrep=5, ncores=2)
 summary(fitted)
 }
 

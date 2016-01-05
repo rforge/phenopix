@@ -11,7 +11,7 @@ and returns an object of class \code{phenopix}.
 \usage{
 greenProcess(ts, fit, threshold=NULL, plot=TRUE, which='light', 
   uncert=FALSE, nrep=100, 
-  envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ...)
+  envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ncores='all', ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,7 +23,7 @@ greenProcess(ts, fit, threshold=NULL, plot=TRUE, which='light',
   \code{klosterman}, \code{gu}. 
 }
   \item{threshold}{
-A character vector of length 1. Available options are: \code{spline}, \code{derivatives}, 
+A character vector of length 1. Available options are: \code{trs}, \code{derivatives}, 
 \code{klosterman}, \code{gu}.  
 }
   \item{plot}{
@@ -64,7 +64,10 @@ in the australian emisphere. If hydro = TRUE all metrics concerned with a day of
 converted in order to get actual day of year. Conversions and back conversions can be performed 
 with the function \code{doy2hydrodoy}.    
 }
-
+  \item{ncores}{
+Number of processors to be used in parallel computation, defaults to 'all' which will accidentally slow down any other activity on your computer. Otherwise set the number of processors you want to use in parallelization. 
+%%     ~~Describe \code{roi.name} here~~
+}
   \item{\dots}{
   For the plotting function, a number of parameters from generic \code{plot} 
   can be specified. See examples. 
@@ -106,6 +109,6 @@ Gianluca Filippa <gian.filippa@gmail.com>
 \examples{
 data(bartlett2009.filtered)
 fitted <- greenProcess(bartlett2009.filtered, 'klosterman', 
-  'klosterman', uncert=TRUE, nrep=5)
+  'klosterman', uncert=TRUE, nrep=5, ncores=2)
 }
 

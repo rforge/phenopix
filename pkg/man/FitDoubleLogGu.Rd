@@ -52,15 +52,3 @@ Processes (Ed: Noormets A, Springer New York), pp 35-58.
 \author{
 Gianluca Filippa <gian.filippa@gmail.com>
 }
-
-\examples{
-data(bartlett2009.filtered)
-fit <- FitDoubleLogGu(bartlett2009.filtered)
-## check fitting
-plot(bartlett2009.filtered)
-lines(fit$predicted, col='red')
-## look at fitting parameters
-fit$params
-## look at fitting equation, where t is time
-fit$formula
-}

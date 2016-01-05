@@ -1,8 +1,10 @@
 summary.phenopix <- function(object, ...) {
     cat('\nData\n')
-    print(summary(object$data))
+    observed <- object$data
+    print(summary(observed))
     cat('\nPredicted\n')
-    print(summary(object$fit$fit$predicted))
+    predicted <- object$fit$fit$predicted
+    print(summary(predicted))
     cat('\nFormula\n')
     print(object$fit$fit$formula)
     cat('\nThresholds\n')

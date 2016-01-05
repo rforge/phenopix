@@ -1,21 +1,21 @@
 PhenoGu <-
 function(
-	##title<< 
-	## Method 'Deriv' to calculate phenology metrics
-	##description<<
-	## This function implements the derivative method for phenology. This is rather an internal function; please use the function \code{\link{Phenology}} to apply this method.
-	
-	x, 
-			
-	fit, 
-	uncert=FALSE, 
+    ##title<< 
+    ## Method 'Deriv' to calculate phenology metrics
+    ##description<<
+    ## This function implements the derivative method for phenology. This is rather an internal function; please use the function \code{\link{Phenology}} to apply this method.
+    
+    x, 
+            
+    fit, 
+    uncert=FALSE, 
     breaks,
-	
-	
-	...
+    
+    
+    ...
 
 ) {
-	
+    
     if (is.null(x)) {
         x <- fit$predicted
         spline.eq <- smooth.spline(x, df=length(x))
@@ -25,12 +25,12 @@ function(
         values <- as.vector(x)        
     } else {
     names(x) <- names(fit$params)
-	retrieved.formula <- fit$formula
-	days <- index(fit$predicted)
+    retrieved.formula <- fit$formula
+    days <- index(fit$predicted)
     t <- index(fit$predicted)
-	values <- as.vector(fit$predicted)
-	D1 <- D(retrieved.formula, 't')
-	D2 <- D(D1, 't')
+    values <- as.vector(fit$predicted)
+    D1 <- D(retrieved.formula, 't')
+    D2 <- D(D1, 't')
     ## e1 <- parent.frame()
     der1 <- eval(D1, envir=as.list(x))
 }
@@ -40,9 +40,9 @@ function(
 #     warning('Check your fitting because the first derivative contains NA or infinite values \n They were set at 0!')
 # }
     if (length(which(is.na(der1)==TRUE))!=0 | length(which(is.infinite(der1)==TRUE))!=0) {metrics <- rep(NA, 9)} else {
-	## extract parameters
-	parameters <- fit$params
-	# get statistical values
+    ## extract parameters
+    parameters <- fit$params
+    # get statistical values
     prr <- max(der1, na.rm=T)
     ## peak recovery date
     prd <- days[which.max(der1)]
@@ -73,7 +73,7 @@ function(
     SD <- (maxline-rl.eq$coefficients[1])/rl.eq$coefficients[2]
     ## downturn day, intersection between maxline and sl
     DD <- (maxline-sl.eq$coefficients[1])/sl.eq$coefficients[2]
-    			    ## subset data between SD and DD
+                    ## subset data between SD and DD
     sub.time <- days[which(days>=SD & days<=DD)]
     sub.gcc <- values[which(days>=SD & days<=DD)]
     if (length(sub.time)>3) {
@@ -94,12 +94,12 @@ function(
         plateau.slope <- NA
         plateau.intercept <- NA
         }
-	metrics <- c(UD, SD, DD, RD, maxline, baseline, prr, psr, plateau.slope)
-    if (length(which(diff(metrics[1:4])<0)!=0))  {
-        metrics <- rep(NA, 9)
-        warning('Threshold do not respect expected timing: set to NA')
-    }
+    metrics <- c(UD, SD, DD, RD, maxline, baseline, prr, psr, plateau.slope)
+    # if (length(which(diff(metrics[1:4])<0)!=0))  {
+    #     metrics <- rep(NA, 9)
+    #     warning('Threshold do not respect expected timing: set to NA')
+    # }
 }
-	names(metrics)  <- c('UD', 'SD', 'DD', 'RD', 'maxline', 'baseline', 'prr', 'psr', 'plateau.slope')
-	return(metrics)
+    names(metrics)  <- c('UD', 'SD', 'DD', 'RD', 'maxline', 'baseline', 'prr', 'psr', 'plateau.slope')
+    return(metrics)
 }

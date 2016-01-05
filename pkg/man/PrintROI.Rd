@@ -11,7 +11,7 @@ on a jpeg image.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-PrintROI(path_img_ref,path_ROIs,which='all',col)
+PrintROI(path_img_ref,path_ROIs,which='all',col, file.type='.jpg')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -31,6 +31,11 @@ Which one of your ROIs you want to draw, defaults to `'all' and draws all rois.
   A character vector with colors. If missing it defaults to color \code{palette}
 %%     ~~Describe \code{roi.names} here~~
 }
+  \item{file.type}{
+  It must match the syntax of your file extension (e.g. .jpg, .JPG, .JPEG). Multiple types are allowed by concatenation with c().  
+%%     ~~Describe \code{roi.names} here~~
+}
+
 }
 \details{
 This utility allows to draw your ROIs on your reference image, with different colors for different ROIS and 

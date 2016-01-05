@@ -8,7 +8,7 @@ A function to fit a smoothed spline to Phenological Data
 A function to fit a smoothed spline to Phenological Data
 }
 \usage{
-SplineFit(ts, uncert = FALSE, nrep = 100, df.factor = 0.05)
+SplineFit(ts, uncert = FALSE, nrep = 100, df.factor = 0.05, ncores='all')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,7 +27,12 @@ Defaults to 0.05, it is multiplied by length(ts) to generate degrees
 of freedom for the spline fitting. The higher the number of data, the 
 higher should be df factor. For a complete year of data 
 (i.e. length(ts)=365) the default value is optimum.}
+  \item{ncores}{
+Unused argument for compatibility
+%%     ~~Describe \code{roi.name} here~~
 }
+}
+
 \details{
 This function fits a smoothed spline to the data. Df for smoothing are set 
 at 0.05*length(ts) by default and df.factor can be modified. 

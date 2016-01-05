@@ -11,7 +11,8 @@ do in a ROI-based analysis, except that uncertainty cannot be estimated
 (since it would be too computationally intense)
 }
 \usage{
-spatialGreen(filtered.data, fit, threshold, ncores='all', log.file=NULL)
+spatialGreen(filtered.data, fit, threshold, ncores='all', 
+  log.file=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

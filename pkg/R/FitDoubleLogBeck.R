@@ -1,60 +1,26 @@
 FitDoubleLogBeck <-
 function(
-	##title<< 
-	## Fit a double logisitic function to a vector according to Beck et al. (2006)
-	##description<<
-	## This function fits a double logistic curve to observed values using the function as described in Beck et al. (2006) (equation 3).
-	
 	x,
-	### vector or time series to fit
-	
 	t = index(x),
-	### time steps
-	
 	tout = t,
-	### time steps of output (can be used for interpolation)
-	
 	weighting = TRUE,
-	### apply the weighting scheme to the observed values as described in Beck et al. 2006? This is useful for NDVI observations because higher values will get an higher weight in the estimation of the double logisitic function than lower values.	
-	
 	return.par = FALSE,
-	### if TRUE the function returns parameters of the double logisitic fit, if FALSE it returns the fitted curve
-	
 	plot = FALSE,
-	### plot iterations for logistic fit?
-	
 	hessian = FALSE,
-
 	...
-	### further arguments (currently not used)
-	
-	##references<< 
-	## Beck, P.S.A., C. Atzberger, K.A. Hodga, B. Johansen, A. Skidmore (2006): Improved monitoring of vegetation dynamics at very high latitudes: A new method using MODIS NDVI. - Remote Sensing of Environment 100:321-334.
-		
-	##seealso<<
-	## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}} 
-
 ) {
+		if (any(is.na(x))) stop('NA in the time series are not allowed: fill them with e.g. na.approx()')
 		if (class(index(x))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(x), '%j'))
 		index(x) <- doy.vector
 		t <- index(x)
 		tout <- t
 	}
-	# linear interpolation if all equal
-	# if (AllEqual(x)) {
-	# 	if (return.par) return(rep(NA, 6))
-	# 	if (!return.par) return(rep(x[1], length(tout)))
-	# }
-	
-	# get statistical values
 	n <- length(x)
 	avg <- mean(x, na.rm=TRUE)
 	mx <- max(x, na.rm=TRUE)
 	mn <- min(x, na.rm=TRUE)
 	ampl <- mx - mn
-		
-	# double logistic function
 	.doubleLog <- function(par, t) {
 		mn <- par[1]
 		mx <- par[2]
@@ -62,13 +28,9 @@ function(
 		rsp <- par[4]
 		eos <- par[5]
 		rau <- par[6]
-		
-		# double-logisitic model according to Beck et al. 2006
 		xpred <- mn + (mx - mn) * (1/(1+exp(-rsp * (t - sos))) + 1/(1+exp(rau * (t - eos))))
 		return(xpred)
 	}
-	
-	# error function
 	.error <- function(par, x, weights) {
 		if (any(is.infinite(par))) return(99999)
 		if (par[1] > par[2]) return(99999)
@@ -76,16 +38,12 @@ function(
 		sse <- sum((xpred - x)^2 * weights, na.rm=TRUE)
 		return(sse)
 	}
-	
-	# weights for function fit
 	if (weighting) {
 		iter <- 1:2
 	} else {
 		iter <- 1
 	}	
 	weights <- rep(1, length(x))	# inital weights
-	
-	# inital parameters to fit double-logistic function
 	doy <- quantile(t, c(0.25, 0.75), na.rm=TRUE)
 	prior <- rbind(
 		c(mn, mx, doy[1], 0.5, doy[2], 0.5),
@@ -183,10 +141,5 @@ names(opt$par) <- c("mn", "mx", "sos", "rsp", "eos", "rau")
 fit.formula <- expression(mn + (mx - mn) * (1/(1+exp(-rsp * (t - sos))) + 1/(1+exp(rau * (t - eos)))))
 output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
 if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
-	# if (return.par) {
-	# 	names(opt$par) <- c("mn", "mx", "sos", "rsp", "eos", "rau")
-	# 	return(opt$par)
-	# } else {
 return(output)
-	### The function returns a vector with fitted values if return.par is FALSE and it returns parameters of the logisitic modle of return.par is TRUE 
 }

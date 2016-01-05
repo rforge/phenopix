@@ -1,78 +1,80 @@
-extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, begin=NULL, spatial=FALSE, date.code) {		
-  
-  # require(extract.date)
-  # source('/home/edo/workspace/R_script/WEBCAM/WEBCAM_v2/extract.date.R')
-  
-  #-----
-  #img.path <- '/mnt/tresigma/cc/WEBCAM/3_ORVIELLIE/WEBCAM/2013/JPG/'
-  #roi.path <- '/mnt/tresigma/cc/WEBCAM/3_ORVIELLIE/WEBCAM/2013/ROI/'
-  #vi.path <- '/mnt/tresigma/cc/WEBCAM/3_ORVIELLIE/WEBCAM/2013/VI/'  
-  #-----
+extractVIs <- function(img.path,roi.path,vi.path=NULL,roi.name=NULL,plot=TRUE, begin=NULL, spatial=FALSE, date.code, npixels=1, 
+  file.type='.jpg', bind=FALSE) {     
   roi.data <- NULL
   load(paste(roi.path,'/roi.data.Rdata',sep=''))
-  
   if (is.null(roi.name)) {    
     roi.name <- names(roi.data)        
   } 
   
   roi.pos <- which(names(roi.data) %in% roi.name == TRUE)
   
-  files <-list.files(path=img.path,recursive=TRUE)
+  files <-list.files(path=img.path,recursive=TRUE, pattern = file.type)
   n_files <-length(files)  
-  
+
+  if (npixels!=1) {
+    r <- brick(paste(img.path,'/',files[1],sep=''))
+    aggregated.r <- aggregate(r,npixels)
+    back.array <- as.array(aggregated.r)
+    sample.img <- back.array/255    
+    roi.data <- updateROI(roi.data, sample.img)
+  }  
   if (spatial==FALSE) {
-  VI.data <- list()  
+    VI.data <- list()  
   #loop trough ROIs
-  for (roi in roi.pos) {   
-    temp.roi <- roi.data[[roi]]
-    pos.pix.roi <- which(temp.roi$pixels.in.roi$pip == 1)
-    VI.data.roi <- NULL
+    for (roi in roi.pos) {   
+      temp.roi <- roi.data[[roi]]
+      pos.pix.roi <- which(temp.roi$pixels.in.roi$pip == 1)
+      VI.data.roi <- NULL
     #loop trough images
-    for (img in seq(n_files)) {
+      for (img in seq(n_files)) {
       ## check date and begin
-      temp.date <- extractDateFilename(files[img], date.code)
-      if (is.na(temp.date)) stop('Something wrong in your date!')
-      if (!is.null(begin)) {
-      beg.date <- as.POSIXct(begin, origin='1970-01-01')
-      if (beg.date >= temp.date) next()
-    } else beg.date <- as.POSIXct('1970-01-01')
-      print (files[img])      
+        temp.date <- extractDateFilename(files[img], date.code)
+        if (is.na(temp.date)) stop('Something wrong in your date!')
+          if (!is.null(begin)) {
+            beg.date <- as.POSIXct(begin, origin='1970-01-01')
+            if (beg.date >= temp.date) next()
+          } else beg.date <- as.POSIXct('1970-01-01')
+        print (files[img])      
       # temp.img <- readJpeg(paste(img.path,'/',files[img],sep=''))
-      temp.img <- readJPEG(paste(img.path,'/',files[img],sep=''))
-      temp.img[,,1] <- temp.img[,,1]*255
-      temp.img[,,2] <- temp.img[,,2]*255
-      temp.img[,,3] <- temp.img[,,3]*255      
-      temp.r.av <- mean(temp.img[,,1][pos.pix.roi])
-      temp.g.av <- mean(temp.img[,,2][pos.pix.roi])
-      temp.b.av <- mean(temp.img[,,3][pos.pix.roi])
-      temp.r.sd <- sd(temp.img[,,1][pos.pix.roi])
-      temp.g.sd <- sd(temp.img[,,2][pos.pix.roi])
-      temp.b.sd <- sd(temp.img[,,3][pos.pix.roi])
-      temp.bri.av <- mean((temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.bri.sd <- sd((temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.gi.av <- mean(temp.img[,,2][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.gi.sd <- sd(temp.img[,,2][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.gei.av <- mean( (2*temp.img[,,2][pos.pix.roi]) - temp.img[,,1][pos.pix.roi] - temp.img[,,3][pos.pix.roi] ,na.rm=TRUE)
-      temp.gei.sd <- sd( (2*temp.img[,,2][pos.pix.roi]) - temp.img[,,1][pos.pix.roi] - temp.img[,,3][pos.pix.roi] ,na.rm=TRUE)
-      temp.ri.av <- mean(temp.img[,,1][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.ri.sd <- sd(temp.img[,,1][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.bi.av <- mean(temp.img[,,3][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
-      temp.bi.sd <- sd(temp.img[,,3][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE) 
-      temp.doy <- as.numeric(format(temp.date,format="%j"))
-      temp.VI <- data.frame(date = temp.date, doy = temp.doy, r.av = temp.r.av, g.av = temp.g.av, b.av = temp.b.av, r.sd = temp.r.sd, g.sd = temp.g.sd, b.sd = temp.b.sd, bri.av = temp.bri.av, bri.sd = temp.bri.sd,
-                            gi.av = temp.gi.av, gi.sd = temp.gi.sd, gei.av = temp.gei.av, gei.sd = temp.gei.sd, ri.av = temp.ri.av, ri.sd = temp.ri.sd, bi.av = temp.bi.av, bi.sd = temp.bi.sd)      
-      VI.data.roi <- rbind(VI.data.roi,temp.VI)     
-    } #endfor loop images  
-  end <- max(VI.data.roi$date, na.rm=TRUE)  
-  if (end < beg.date) stop('Your final date is later than last record in your timeseries')
-    end <- trunc(end, 'day')
-    VI.data[[roi]] <- VI.data.roi         
-    if (plot == TRUE) {
-if (is.null(begin)) {
-      png(filename=paste(vi.path,roi.name[roi],'_roi_VI_plot.png',sep=''), width=800, height=5*400, pointsize=30)  
-         } else {
-      png(filename=paste(vi.path,begin, '_', end, '_',roi.name[roi],'_roi_VI_plot.png',sep=''), width=800, height=5*400, pointsize=30)           
-         }
+        if (npixels==1) temp.img <- readJPEG(paste(img.path,'/',files[img],sep='')) else {
+          r <- brick(paste(img.path,'/',files[img],sep=''))
+          aggregated.r <- aggregate(r,npixels)
+          back.array <- as.array(aggregated.r)
+          temp.img <- back.array/255
+        }
+        temp.img[,,1] <- temp.img[,,1]*255
+        temp.img[,,2] <- temp.img[,,2]*255
+        temp.img[,,3] <- temp.img[,,3]*255      
+        temp.r.av <- mean(temp.img[,,1][pos.pix.roi])
+        temp.g.av <- mean(temp.img[,,2][pos.pix.roi])
+        temp.b.av <- mean(temp.img[,,3][pos.pix.roi])
+        temp.r.sd <- sd(temp.img[,,1][pos.pix.roi])
+        temp.g.sd <- sd(temp.img[,,2][pos.pix.roi])
+        temp.b.sd <- sd(temp.img[,,3][pos.pix.roi])
+        temp.bri.av <- mean((temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.bri.sd <- sd((temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.gi.av <- mean(temp.img[,,2][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.gi.sd <- sd(temp.img[,,2][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.gei.av <- mean( (2*temp.img[,,2][pos.pix.roi]) - temp.img[,,1][pos.pix.roi] - temp.img[,,3][pos.pix.roi] ,na.rm=TRUE)
+        temp.gei.sd <- sd( (2*temp.img[,,2][pos.pix.roi]) - temp.img[,,1][pos.pix.roi] - temp.img[,,3][pos.pix.roi] ,na.rm=TRUE)
+        temp.ri.av <- mean(temp.img[,,1][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.ri.sd <- sd(temp.img[,,1][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.bi.av <- mean(temp.img[,,3][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE)
+        temp.bi.sd <- sd(temp.img[,,3][pos.pix.roi] / (temp.img[,,1][pos.pix.roi] + temp.img[,,2][pos.pix.roi] + temp.img[,,3][pos.pix.roi]),na.rm=TRUE) 
+        temp.doy <- as.numeric(format(temp.date,format="%j"))
+        temp.VI <- data.frame(date = temp.date, doy = temp.doy, r.av = temp.r.av, g.av = temp.g.av, b.av = temp.b.av, r.sd = temp.r.sd, g.sd = temp.g.sd, b.sd = temp.b.sd, bri.av = temp.bri.av, bri.sd = temp.bri.sd,
+          gi.av = temp.gi.av, gi.sd = temp.gi.sd, gei.av = temp.gei.av, gei.sd = temp.gei.sd, ri.av = temp.ri.av, ri.sd = temp.ri.sd, bi.av = temp.bi.av, bi.sd = temp.bi.sd)      
+        VI.data.roi <- rbind(VI.data.roi,temp.VI)     
+      } #endfor loop images  
+      end <- max(VI.data.roi$date, na.rm=TRUE)  
+      if (end < beg.date) stop('Your final date is later than last record in your timeseries')
+        end <- trunc(end, 'day')
+      VI.data[[roi]] <- VI.data.roi         
+      if (plot == TRUE & is.null(begin)) {
+        png(filename=paste(vi.path,roi.name[roi],'_roi_VI_plot.png',sep=''), width=800, height=5*400, pointsize=30)  
+      #    } else {
+      # png(filename=paste(vi.path,begin, '_', end, '_',roi.name[roi],'_roi_VI_plot.png',sep=''), width=800, height=5*400, pointsize=30)           
+      #    }
         par(mfrow=c(5,1))
         par(mar=c(3,4,2,0.5))
         plot(VI.data.roi$date,VI.data.roi$r.av,col='red',pch=20,xlab='',ylab='R-G-B',main=paste('ROI: ',roi.name[roi],sep=''))
@@ -87,19 +89,28 @@ if (is.null(begin)) {
         par(mar=c(4,4,0.5,0.5)) 
         plot(VI.data.roi$date,VI.data.roi$bri.av,col='grey',pch=20,xlab='doy',ylab='BRI')
         
-      dev.off()
-    }   
-  } #endfor loop rois
-  
-  names(VI.data) <- roi.name
-  if (is.null(begin)) {
-  save(VI.data,file=paste(vi.path,'VI.data.Rdata',sep=''))
-} else {
-  save(VI.data,file=paste(vi.path,begin,'_', end, '_', 'VI.data.Rdata',sep=''))  
-}
-} else {## if spatial == TRUE
-VI.data <- list()
- for (roi in roi.pos) {    
+        dev.off()
+      }   
+    } #endfor loop rois
+
+    names(VI.data) <- roi.name
+    if (is.null(begin)) {
+      save(VI.data,file=paste(vi.path,'VI.data.Rdata',sep=''))
+    } else {
+      if (bind) {
+        VI.data.new <- VI.data
+        load(paste(vi.path,'VI.data.Rdata',sep=''))
+        check <- VI.data.new[[1]]$date[1]<tail(VI.data[[1]]$date,1)
+        if (check) warning('New begin date is prior to the end of the already existing records in VI.data! Check your dates')
+         for (p in 1:length(VI.data)) VI.data[[p]] <- rbind(VI.data[[p]], VI.data.new[[p]])
+          save(VI.data,file=paste(vi.path,'VI.data.Rdata',sep=''))      
+      } else {
+        save(VI.data,file=paste(vi.path,begin,'_', end, '_', 'VI.data.Rdata',sep=''))  
+      }
+    }
+  } else {## if spatial == TRUE
+  VI.data <- list()
+  for (roi in roi.pos) {    
     temp.roi <- roi.data[[roi]]
     pos.pix.roi <- which(temp.roi$pixels.in.roi$pip == 1)
     VI.data.roi <- list()
@@ -108,39 +119,44 @@ VI.data <- list()
       ## check date and begin
       temp.date <- extractDateFilename(files[img], date.code)
       if (!is.null(begin)) {
-      beg.date <- as.POSIXct(begin, origin='1970-01-01')
-      if (beg.date >= temp.date) next()
-    }
-      print (files[img])
+        beg.date <- as.POSIXct(begin, origin='1970-01-01')
+        if (beg.date >= temp.date) next()
+      }
+    print (files[img])
+    if (npixels==1) temp.img <- readJPEG(paste(img.path,'/',files[img],sep='')) else {
+      r <- brick(paste(img.path,'/',files[img],sep=''))
+      aggregated.r <- aggregate(r,npixels)
+      back.array <- as.array(aggregated.r)
+      temp.img <- back.array/255
+    }     
       # temp.img <- readJpeg(paste(img.path,'/',files[img],sep=''))
-      temp.img <- readJPEG(paste(img.path,'/',files[img],sep=''))
-      temp.img[,,1] <- temp.img[,,1]*255
-      temp.img[,,2] <- temp.img[,,2]*255
-      temp.img[,,3] <- temp.img[,,3]*255      
-      all.reds <- temp.img[,,1][pos.pix.roi] 
-      all.greens <- temp.img[,,2][pos.pix.roi] 
-      all.blue <- temp.img[,,3][pos.pix.roi] 
-      pixel.df <- data.frame(red=all.reds, green=all.greens, blue=all.blue)
-      VI.data.roi[[img]] <- pixel.df
-      names(VI.data.roi)[img] <- temp.date
-      #points(poligono$colpos,ratio-poligono$rowpos,pch='.')
-}
+      # temp.img <- readJPEG(paste(img.path,'/',files[img],sep=''))
+    temp.img[,,1] <- temp.img[,,1]*255
+    temp.img[,,2] <- temp.img[,,2]*255
+    temp.img[,,3] <- temp.img[,,3]*255      
+    all.reds <- temp.img[,,1][pos.pix.roi] 
+    all.greens <- temp.img[,,2][pos.pix.roi] 
+    all.blue <- temp.img[,,3][pos.pix.roi] 
+    pixel.df <- data.frame(red=all.reds, green=all.greens, blue=all.blue)
+    VI.data.roi[[img]] <- pixel.df
+    names(VI.data.roi)[img] <- temp.date
+  }
 ### remove unprocessed data if 
-null.pos <- which(lapply(VI.data.roi, is.null)==TRUE)
-if (length(null.pos)!=0) VI.data.roi <- VI.data.roi[-null.pos]
-dates <- as.POSIXct(as.numeric(names(VI.data.roi)), origin='1970-01-01')
-names(VI.data.roi) <- dates
-end <- max(dates, na.rm=TRUE)  
-if (!is.null(begin)) if (end < beg.date) stop('Your final date is later than last record in your timeseries')
-end <- trunc(end, 'day')
-VI.data[[roi]] <- VI.data.roi
+  null.pos <- which(lapply(VI.data.roi, is.null)==TRUE)
+  if (length(null.pos)!=0) VI.data.roi <- VI.data.roi[-null.pos]
+  dates <- as.POSIXct(as.numeric(names(VI.data.roi)), origin='1970-01-01')
+  names(VI.data.roi) <- dates
+  end <- max(dates, na.rm=TRUE)  
+  if (!is.null(begin)) if (end < beg.date) stop('Your final date is later than last record in your timeseries')
+    end <- trunc(end, 'day')
+  VI.data[[roi]] <- VI.data.roi
 }  ## end roi loop
 names(VI.data) <- roi.name
-  if (is.null(begin)) {
+if (is.null(begin)) {
   save(VI.data,file=paste(vi.path,'VI.data.spatial.Rdata',sep=''))
 } else {
   save(VI.data,file=paste(vi.path,begin,'_', end, '_', 'VI.data.spatial.Rdata',sep=''))  
 }
 }
-invisible(VI.data)	 
+invisible(VI.data)   
 }

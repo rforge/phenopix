@@ -19,6 +19,12 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 		final.value <- as.numeric(paste(na.omit(t(num.conv)), collapse=''))
 		return(final.value)
 	}
+		.binaryConvert <- function(img) {
+		grey.image <- 0.2126*img[,,1] + 0.7152*img[,,2] + 0.0722*img[,,3]
+		binary <- round(grey.image, 0)
+		rev.binary <- ifelse(binary==1, 0, 1)
+		return(rev.binary)
+    }
 #####
 	## get train data	
 	binary.number.samples <- train.data 
@@ -26,15 +32,16 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 	ref.ncol <- max(sapply(binary.number.samples, ncol))	
 	ref.nrow <- max(sapply(binary.number.samples, nrow))
 	## provide possibility to only get a sample of images and not the whole folder
-	to.sample <- length(list.files(ipath, full.names=TRUE))	
+	to.sample <- length(list.files(ipath, full.names=TRUE, recursive=TRUE))	
 	if (!is.null(sample)) the.sample <- sample(to.sample, sample) else the.sample <- 1:to.sample
 	## get image file names 
-	all.jpeg.files.full <- list.files(ipath, full.names=TRUE)[the.sample]
-	all.jpeg.files <- list.files(ipath)[the.sample]	
+	all.jpeg.files.full <- list.files(ipath, full.names=TRUE, recursive=TRUE)[the.sample]
+	all.jpeg.files <- list.files(ipath, recursive=TRUE)[the.sample]	
 	## loop of exposure
 	exposure.final <- data.frame(image=all.jpeg.files, exposure=NA)
 	for (tt in 1:nrow(exposure.final)) {
 		image.target <- readJPEG(all.jpeg.files.full[tt])
+		image.target <- .binaryConvert(image.target)
 		image.width <- dim(image.target)[2]
 		image.height <- dim(image.target)[1]
 		## cut according to coords
@@ -77,10 +84,16 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 		## identify region with 3 consecutive whites, it is between : and numbers
 		median.value <- 0
 		ind <- 1
+		breaker <- FALSE
 		while (median.value!=ref.nrow) {
-			median.value <- median(colsums[ind:(ind+3)])
+			median.value <- try(median(colsums[ind:(ind+3)], na.rm=TRUE))
+			if (is.na(median.value)) {
+				median.value <- ref.nrow ## to exit the while loop
+				breaker <- TRUE ## to break the loop 
+			}
 			ind <- ind +1
 		}
+		if (breaker) next()
 		beg.point <- ind +1
 		## identify white spaces to split single numbers (max number of figures allowed:4)
 		colsum.cut <- colsums[beg.point:length(colsums)]

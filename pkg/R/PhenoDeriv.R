@@ -1,28 +1,13 @@
 PhenoDeriv <-
 function(
-	##title<< 
-	## Method 'Deriv' to calculate phenology metrics
-	##description<<
-	## This function implements the derivative method for phenology. This is rather an internal function; please use the function \code{\link{Phenology}} to apply this method.	
 	x, 
-	### seasonal cycle of one year
 	formula=NULL, 
 	uncert=FALSE, 
 	params=NULL, 
 	breaks,
-	### plot results?
-	
 	...
-	### further arguments (currently not used)
-		
-	##seealso<<
-	## \code{\link{Phenology}}
-
 ) {
-
 	if (all(is.na(x))) return(c(sos=NA, eos=NA, los=NA, pop=NA, mgs=NA, rsp=NA, rau=NA, peak=NA, msp=NA, mau=NA))
-
-	# get statistical values
 	n <- index(x)[length(x)]
 	avg <- mean(x, na.rm=TRUE)
 	x2 <- na.omit(x)

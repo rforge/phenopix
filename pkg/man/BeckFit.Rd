@@ -11,13 +11,13 @@ A function to fit a double logisitic function to a vector according to Beck et a
  See \code{greenProcess}
 }
 \usage{
-BeckFit(ts, uncert = FALSE, nrep = 1000, error='average')
+BeckFit(ts, uncert = FALSE, nrep = 100, ncores='all')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{ts}{
     A ts or zoo object with gcc data. index(ts) must be numeric days of
-    year (doys)
+    year (doys) or a POSIXct vector
 }
   \item{uncert}{
   Should uncertainty be estimated?
@@ -25,16 +25,16 @@ BeckFit(ts, uncert = FALSE, nrep = 1000, error='average')
   \item{nrep}{
   Number of relications to estimate uncertainty, defaults to 1000. 
 }
-  \item{error}{
-  How to handle error 
+  \item{ncores}{
+Number of processors to be used in parallel computation, defaults to 'all' which will accidentally slow down any other activity on your computer. Otherwise set the number of processors you want to use in parallelization. 
+%%     ~~Describe \code{roi.name} here~~
 }
-
 }
 \details{
  The function estimates parameters of the double logistic equation from
  Beck et al. 2006 and provides an uncertainty estimation. Parameters are
  estimated by a call to the function \code{FitDoubleLogBeck} from the 
- greenbrown package. Uncertainty is computed by adding noise to the raw
+ \code{greenbrown} package. Uncertainty is computed by adding noise to the raw
  data and by estimating again the parameters. Noise is added according
  to the standard deviation of the residuals (fitted - observed).
  The procedure is repeated nrep times.  
@@ -58,15 +58,17 @@ Gianluca Filippa <gian.filippa@gmail.com>
 }
 
 \examples{
+\dontrun{
+library(zoo)
 data(bartlett2009.filtered)
 ## fit without uncertainty estimation
 fitted.beck <- BeckFit(bartlett2009.filtered)
-## check fitting
 plot(bartlett2009.filtered)
 lines(fitted.beck$fit$predicted, col='red')
 ## look at fitting parameters
 fitted.beck$fit$params
 ## look at fitting equation, where t is time
 fitted.beck$fit$formula
+}
 }
 

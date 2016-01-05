@@ -17,7 +17,7 @@ PhenoKl(x, uncert = FALSE, fit, breaks, ...)
   A named vector with the parameters of the equation used to fit the data. 
 }
   \item{uncert}{
-  Should uncertainty be estimated?
+Currently unused
 }
   \item{fit}{
  A list structured as in output from the fitting procedures, such as GuFit, 
@@ -76,3 +76,16 @@ in a for loop cycling in  the uncertainty dataframe columns.
 \code{\link{PhenoExtract}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
+
+\examples{
+data(bartlett2009.fitted)
+klosterman.phenophases <- PhenoKl(
+	x=bartlett2009.fitted$fit$params, 
+	fit=bartlett2009.fitted$fit)
+plot(bartlett2009.fitted$fit$predicted)
+abline(v=klosterman.phenophases[1:4], col=palette())
+mtext(names(klosterman.phenophases[1:4]), 
+	at=klosterman.phenophases[1:4], line=-2:-5, 
+	col=palette()[1:4])
+}
+

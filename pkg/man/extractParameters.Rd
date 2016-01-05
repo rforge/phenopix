@@ -5,22 +5,23 @@
 Extract fitting parameters from a pixel-based analysis 
 }
 \description{
-This function allows to extract fitting parameters from pixel-based analysis of a seasonal ensemble of images in one or multiple rois.   
+This function allows to extract fitting parameters from pixel-based analysis of a 
+seasonal ensemble of images in one or multiple rois.   
 }
 \usage{
-extractParameters(path, list=NULL, update=NULL) 
+extractParameters(list, update=NULL, ...) 
 }
 \arguments{
-  \item{path}{
-  	A path where pixel fittings are stored. This condition applies if you have run \code{spatialGreen} with argument
-    \code{save} == TRUE. 
-}
   \item{list}{
-  A list as in output from \code{spatialGreen} if \code{assign} == TRUE. It defaults to NULL, implying the condition for 
-  argument \code{path} applies (i.e. you have saved your single pixels RData. 
+  A list as in output from \code{spatialGreen}.  
 }
   \item{update}{
-  One between 'spline', 'derivatives', 'klosterman', 'gu' or NULL (the default). See \code{update} from this package for further details. 
+  One between 'trs', 'derivatives', 'klosterman', 'gu' or NULL (the default). 
+  See \code{update} from this package for further details. 
+}
+
+  \item{\dots}{
+Further arguments to the update function. Currently, you can specify a \code{trs} argument for update method \code{trs} for specific thresholds. See \code{PhenoExtract} for further details.  
 }
 
 }

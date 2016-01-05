@@ -32,7 +32,6 @@ Gianluca Filippa <gian.filippa@gmail.com>
 
 \seealso{
 \code{\link{getCoords}}
-\code{\link{binaryConvert}}
 }
 
 

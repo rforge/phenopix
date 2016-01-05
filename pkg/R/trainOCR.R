@@ -2,9 +2,15 @@ trainOCR <- function(image.path, nsamples=100) {
 	.plotImage <- function(image, ...) {
 		ncols <- ncol(image)
 		nrows <- nrow(image)
-		plot(0, type='n', xlim=c(0, ncols), ylim=c(0, nrows), ...)
-		rasterImage(image, xleft=0, ybottom=0, xright=ncols, ytop=nrows, ...)
+		suppressWarnings(plot(0, type='n', xlim=c(0, ncols), ylim=c(0, nrows), ...))
+		suppressWarnings(rasterImage(image, xleft=0, ybottom=0, xright=ncols, ytop=nrows, ...))
 	}
+	.binaryConvert <- function(img) {
+		grey.image <- 0.2126*img[,,1] + 0.7152*img[,,2] + 0.0722*img[,,3]
+		binary <- round(grey.image, 0)
+		rev.binary <- ifelse(binary==1, 0, 1)
+		return(rev.binary)
+    }
 	numbers <- c('E','0', '1', '2', '3', '4', 
 		'5', '6', '7', '8', '9')
 	number.list <- list()
@@ -12,11 +18,12 @@ trainOCR <- function(image.path, nsamples=100) {
 		number.list[[a]] <- NA
 	}
 	names(number.list) <- numbers
-	image.list <- list.files(image.path, full.names=TRUE)
+	image.list <- list.files(image.path, full.names=TRUE, recursive=TRUE)
 	image.samples <- sample(image.list, nsamples, replace=TRUE)
 	a <- 1
 	while(any(is.na(number.list))) {
 		image.large <- readJPEG(image.samples[a])
+		image.large <- .binaryConvert(image.large)
 		image.height <- dim(image.large)[1]
 		a <- a+1 
 		missing <- names(number.list)[which(is.na(number.list))]

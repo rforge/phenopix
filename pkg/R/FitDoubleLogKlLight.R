@@ -1,22 +1,13 @@
 FitDoubleLogKlLight <-
 function(
-    ##title<<
-    ## Fit a double logisitic function to a vector according to Elmore et al. (2012)
-    ##description<<
-    ## This function fits a double logistic curve to observed values using the function as described in Elmore et al. (2012) (equation 4).
-
     x,
-### vector or time series to fit
-
     t = index(x),
-### time steps
-
     tout = t,
-   hessian = FALSE,
+    hessian = FALSE,
     ...
-
     ) {
-            if (class(index(x))[1]=='POSIXct') {
+        if (any(is.na(x))) stop('NA in the time series are not allowed: fill them with e.g. na.approx()')
+    if (class(index(x))[1]=='POSIXct') {
         doy.vector <- as.numeric(format(index(x), '%j'))
         index(x) <- doy.vector
         t <- index(x)
@@ -28,7 +19,7 @@ function(
     mn <- min(x, na.rm=TRUE)
     ampl <- mx - mn
     .doubleLog <- function(par, t) {
-        
+
         a1 <- par[1]
         a2 <- par[2]
         b1 <- par[3]
@@ -41,23 +32,17 @@ function(
         q1 <- par[10]
         q2 <- par[11]
         v1 <- par[12]
-        v2 <- par[13]
- 
+        v2 <- par[13] 
         xpred <- (a1*t + b1) + (a2*t^2 + b2*t + c)*(1/(1+q1*exp(-B1*(t-m1)))^v1 - 1/(1+q2*exp(-B2*(t-m2)))^v2)
         return(xpred)
     }
-
-                                        # error function
     .error <- function(par, x, t) {
         if (any(is.infinite(par))) return(99999)
-        xpred <- .doubleLog(par, t=t)
+            xpred <- .doubleLog(par, t=t)
         sse <- sum((xpred - x)^2, na.rm=TRUE)
         return(sse)
     }
-
-                                        # inital parameters to fit double-logistic function
     doy <- quantile(t, c(0.25, 0.75), na.rm=TRUE)
-    # doy2 <- diff(doy)
     a1 <- 0 #ok
     a2 <- 0 #ok
     b1 <- mn #ok
@@ -79,96 +64,68 @@ function(
 
 
     prior <- rbind(
-        # c(offset, ampl, b1, b2, m1, m2, q1, q2, v1, v2),
-        # c(offset, ampl, 0.03, b2, m1, m2, q1, q2, v1, v2),
-        # c(offset, ampl, b1, b2, m1, m2, q1, q2, v1, v2),
-        # c(offset, ampl, 0.03, b2, m1, m2, 2, 2, v1, v2)        
         c(a1, a2, b1, b2, c, B1, B2, m1,m2, q1, q2, v1, v2),
         c(a1, a2, b1, 0.01, 0, B1, B2, m1,m2.bis, q1, 1, v1, 4),
         c(a1, a2, b1, b2, c, B1, B2, m1.bis,m2, q1, q2, v1, v2),
         c(a1, a2, b1, b2, c, B1, B2, m1,m2.bis, q1, q2, v1, v2),
         c(a1, a2, b1, b2, c, B1, B2, m1.bis,m2, q1, q2, v1, v2)
         )
-
-    # if (plot) plot(t, x)
-
-                                        # estimate parameters for double-logistic function starting at different priors
     opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000), hessian=hessian)   # fit from different prior values
     opt.df <- cbind(cost=unlist(llply(opt.l, function(opt) opt$value)), convergence=unlist(llply(opt.l, function(opt) opt$convergence)), ldply(opt.l, function(opt) opt$par))
-    ## remove negative exponents for q1 and 2, var 10 and 11
     pos <- which(opt.df$V6 < 0 | opt.df$V7 < 0)
     if (length(pos)!=0) {
         opt.df <- opt.df[-pos,]
         opt.l <- opt.l[-pos]
     }
     best <- which.min(opt.df$cost)
-
-                                        # test for convergence
     if (opt.df$convergence[best] == 1) { # if maximum iterations where reached - restart from best with more iterations
-        opt <- opt.l[[best]]
-        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700), hessian=hessian)
-        prior <- rbind(prior, opt$par)
-        xpred <- .doubleLog(opt$par, t)
-    } else if (opt.df$convergence[best] == 0) {
-        opt <- opt.l[[best]]
-        prior <- rbind(prior, opt$par)
-        xpred <- .doubleLog(opt$par, t) ## perche questo restituisce nan?
-    }
-
-                                        # plot iterations
-    # if (plot) {
-    #     llply(opt.l, function(opt) {
-    #         xpred <- .doubleLog(opt$par, t)
-    #         lines(t, xpred, col="cyan")
-    #     })
-    #     lines(t, xpred, col="blue", lwd=2)
-    # }
-
-                                        # return NA in case of no convergence
-    if (opt$convergence != 0) {
-        opt$par[] <- NA
-        xpred <- rep(NA, length(tout))
-    } else {
-        xpred <- .doubleLog(opt$par, tout)
-    }
+    opt <- opt.l[[best]]
+    opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", control=list(maxit=700), hessian=hessian)
+    prior <- rbind(prior, opt$par)
+    xpred <- .doubleLog(opt$par, t)
+} else if (opt.df$convergence[best] == 0) {
+    opt <- opt.l[[best]]
+    prior <- rbind(prior, opt$par)
+    xpred <- .doubleLog(opt$par, t) ## perche questo restituisce nan?
+}
+if (opt$convergence != 0) {
+    opt$par[] <- NA
+    xpred <- rep(NA, length(tout))
+} else {
+    xpred <- .doubleLog(opt$par, tout)
+}
 xpred.out <- zoo(xpred, order.by=t)
 names(opt$par) <- c('a1', 'a2', 'b1', 'b2', 'c', 'B1', 'B2', 'm1', 'm2', 'q1', 'q2', 'v1', 'v2') 
 
-   if (hessian) {
-        opt.new <- optim(opt$par, .error, x=x, t=t, method="BFGS", hessian=TRUE
+if (hessian) {
+    opt.new <- optim(opt$par, .error, x=x, t=t, method="BFGS", hessian=TRUE
                          ## ,              
                          ## control=list('fnscale'=-1)
-                         )
-        .qr.solve <- function(a, b, tol = 1e-07, LAPACK=TRUE) {
+     )
+    .qr.solve <- function(a, b, tol = 1e-07, LAPACK=TRUE) {
         if (!is.qr(a)) 
-        a <- qr(a, tol = tol, LAPACK=LAPACK)
-    nc <- ncol(a$qr)
-    nr <- nrow(a$qr)
-    if (a$rank != min(nc, nr)) 
-        stop("singular matrix 'a' in solve")
-    if (missing(b)) {
-        if (nc != nr) 
-            stop("only square matrices can be inverted")
-        b <- diag(1, nc)
+            a <- qr(a, tol = tol, LAPACK=LAPACK)
+        nc <- ncol(a$qr)
+        nr <- nrow(a$qr)
+        if (a$rank != min(nc, nr)) 
+            stop("singular matrix 'a' in solve")
+        if (missing(b)) {
+            if (nc != nr) 
+                stop("only square matrices can be inverted")
+            b <- diag(1, nc)
+        }
+        res <- qr.coef(a, b)
+        res[is.na(res)] <- 0
+        res        
     }
-    res <- qr.coef(a, b)
-    res[is.na(res)] <- 0
-    res        
-        }
-        vc <- .qr.solve(opt$hessian)
-        npar <- nrow(vc)
-        s2 <- opt.df$cost[best]^2 / (n - npar)
-        std.errors <- sqrt(diag(vc) * s2)     # standard errors
-        }
+    vc <- .qr.solve(opt$hessian)
+    npar <- nrow(vc)
+    s2 <- opt.df$cost[best]^2 / (n - npar)
+    std.errors <- sqrt(diag(vc) * s2)     # standard errors
+}
 
 fit.formula <- expression((a1*t + b1) + (a2*t^2 + b2*t + c)*(1/(1+q1*exp(-B1*(t-m1)))^v1 - 1/(1+q2*exp(-B2*(t-m2)))^v2))
 output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
 if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
-return(output)
-    # if (return.par) {
-    #     ## names(opt$par) <- paste("m", 1:7, sep="")
-    #     return(opt$par)
-    # } else {
-    #     return(xpred)
-    # }
+    return(output)
 }

@@ -1,11 +1,16 @@
 greenProcess <- function(ts, fit, threshold=NULL, plot=TRUE, which='light', uncert=FALSE, nrep=100, 
-    envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ...) {
+    envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ncores='all',...) {
 ## doy conversion
 doys <- as.numeric(format(index(ts), '%j'))	
 act.year <- format(index(ts)[1], '%Y')
 act.oct.first <- as.numeric(format(as.POSIXct(paste0(act.year, '-10-01')), '%j'))
 # complement <- ifelse(act.oct.first==274, 92, 92)
 if (hydro) doys  <- ifelse(doys >= act.oct.first,  doys - (act.oct.first - 1), doys + 92) 
+pos <- which(diff(doys)<0)
+if (length(pos)!=0) {
+	ts <- ts[(pos[1]+1):length(ts)]
+	doys <- doys[(pos[1]+1):length(doys)]
+}
 index(ts) <- doys	
 if (missing(fit)) stop('Provide a fit name')	
 if (fit=='spline') fit.fun <- SplineFit
@@ -13,8 +18,8 @@ if (fit=='beck') fit.fun <- BeckFit
 if (fit=='elmore') fit.fun <- ElmoreFit
 if (fit=='klosterman') fit.fun <- KlostermanFit
 if (fit=='gu') fit.fun <- GuFit
-if (fit=='klosterman') fitted.data <- try(fit.fun(ts, uncert=uncert, which=which, nrep=nrep)) else {
-fitted.data <- try(fit.fun(ts, uncert=uncert, nrep=nrep))
+if (fit=='klosterman') fitted.data <- try(fit.fun(ts, uncert=uncert, which=which, nrep=nrep, ncores=ncores)) else {
+fitted.data <- try(fit.fun(ts, uncert=uncert, nrep=nrep, ncores=ncores))
 }
 if (is.null(threshold)) {
 	metrics <- NULL 

@@ -31,7 +31,8 @@ In date.code provide the format of your date, using lower letters for year (y)
 month (m) and day (d) and upper letters for hour (H) and minute (M). As an example: 
 If your file is named: 'sitename_2012_03_03_15-30.jpg' than your 
 date.code is "yyyy_mm_dd_HH-MM".
-If your file is named 'sitename_12.03.03.1530.jpg' than your date.code is "yy.mm.dd.HHMM"
+If your file is named 'sitename_12.03.03.1530.jpg' than your date.code is 
+"yy.mm.dd.HHMM"
 If hours and minutes are missing in your filename, convertion defaults to 12:00. 
 }
 \value{

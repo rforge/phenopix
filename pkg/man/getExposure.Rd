@@ -16,7 +16,8 @@ getExposure(ipath, coords, train.data=FALSE, date.code, sample=NULL)
   The absolute path to a folder of JPEG binary images, as converted from RGB with the function \code{binaryConvert()}  
 }
   \item{coords}{
-  A named vector with 4 coordinates (x1, x2, y1, y2), as obtained from \code{getCoords()}.  
+  A named vector with 4 coordinates (x1, x2, y1, y2), as obtained from 
+  \code{getCoords()}.  
 }
   \item{train.data}{
   A named list with ten sample numbers and letter E, as obtained from \code{trainOCR()}.  
@@ -30,7 +31,7 @@ getExposure(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 }
 }
 \details{
-This function performs a simplified OCR procedure to recognize numbers in a binary image. To do so, a full RGB image is first converted in binary (b/w) with the function \code{binaryConvert()}. Then the coordinates to crop the Exposure record are retrieved with \code{getCoords()} and, finally, the computation is done with \code{getExposure}. Before doing so you have to train the OCR with sample numbers. See \code{trainOCR()} for details. The procedure is based on simple matrix matching. The Exposure string is splitted into the number that constitute it and then each number is compared to the samples from the training. Finally, a dataframe is extracted with filenames in the first column, exposure in the second one and a POSIX vector in the third. 
+This function performs a simplified OCR procedure to recognize numbers in a binary image. To do so, a full RGB image is first converted in binary (b/w) internally. Then the coordinates to crop the Exposure record are retrieved with \code{getCoords()} and, finally, the computation is done with \code{getExposure}. Before doing so you have to train the OCR with sample numbers. See \code{trainOCR()} for details. The procedure is based on simple matrix matching. The Exposure string is splitted into the digits that constitute it and then each digit is compared to the samples from the training. Finally, a dataframe is extracted with filenames in the first column, exposure in the second one and a POSIX vector in the third. 
 }
 
 \author{
@@ -40,7 +41,6 @@ Gianluca Filippa <gian.filippa@gmail.com>
 
 \seealso{
 \code{\link{getCoords}}
-\code{\link{binaryConvert}}
 }
 
 

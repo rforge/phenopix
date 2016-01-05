@@ -1,12 +1,12 @@
 PhenoExtract <-
 function(data, 
-	method='spline', 
+	method='trs', 
 	uncert=FALSE, 
 	breaks=3, 
 	envelope='quantiles', 
 	quantiles=c(.1,.9), plot=TRUE, ...) {
 the.formula <- data$fit$formula
-if (method=='spline') {
+if (method=='trs') {
 	the.function <- PhenoTrs
 	single.data <- data$fit$predicted
 	uncertainty.data <- data$uncertainty$predicted
@@ -34,11 +34,11 @@ if (method=='klosterman') {
 		uncertainty.data <- data$uncertainty$params
 	} 
 if (is.null(data$uncertainty) | uncert==FALSE) {
-	returned <- the.function(single.data, fit=data$fit, uncert=uncert, breaks=breaks) 
+	returned <- suppressWarnings(the.function(single.data, fit=data$fit, uncert=uncert, breaks=breaks, ...)) 
 } else {
 	thresholds <- NULL
 	for (a in 1:dim(uncertainty.data)[2]) {
-		tmp.column <- the.function(uncertainty.data[,a], fit=data$fit, uncert=uncert, breaks=breaks)
+		tmp.column <- suppressWarnings(the.function(uncertainty.data[,a], fit=data$fit, uncert=uncert, breaks=breaks, ...))
 		thresholds <- cbind(thresholds, tmp.column)
 	}
 	# thresholds <- apply(uncertainty.data, 2, the.function, uncert=TRUE, fit=data$fit, breaks=breaks) 
@@ -49,7 +49,7 @@ rownames(returned) <- c('min', 'mean', 'max')
 }
 }
 if (plot) {
-	PhenoPlot(data, returned, add=F, show.uncert=uncert, ...)
+	suppressWarnings(PhenoPlot(data, returned, add=F, show.uncert=uncert, ...))
 }
 if (uncert) {
 	thresholds.t <- t(thresholds)

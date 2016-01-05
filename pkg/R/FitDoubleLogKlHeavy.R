@@ -29,12 +29,13 @@ function(
     ## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}}
 
     ) {
+        if (any(is.na(x))) stop('NA in the time series are not allowed: fill them with e.g. na.approx()')
         if (class(index(x))[1]=='POSIXct') {
         doy.vector <- as.numeric(format(index(x), '%j'))
         index(x) <- doy.vector
     }
 ## integrare da tmp.R per la funzione best.nls e tutte le sue dipendenze
-## la teniamo strutturata così e aggiustiamo i dati in modo che funzioni
+## la teniamo strutturata cos e aggiustiamo i dati in modo che funzioni
 
 .rss <- function(fit, gcc) {
     sum.all <- sum(abs(predict(fit)-gcc))/sqrt(length(gcc))

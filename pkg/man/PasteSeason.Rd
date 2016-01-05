@@ -14,7 +14,8 @@ PasteSeason(x)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-  A list of objects as in output from \code{greenProcess}. All subseasonal fittings 
+  A list of objects as in output from 
+  \code{greenProcess}. All subseasonal fittings 
   must be listed in a list and passed to the present function. 
 }
 }

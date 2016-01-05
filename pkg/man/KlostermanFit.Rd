@@ -10,13 +10,13 @@ This function fits a double logistic curve to observed values using the
  function as described in klosterman et al. (2014), eq 7. 
 }
 \usage{
-KlostermanFit(ts, which = "light", uncert = FALSE, nrep = 100)
+KlostermanFit(ts, which = "light", uncert = FALSE, nrep = 100, ncores='all')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{ts}{
    A ts or zoo object with gcc data. index(ts) must be numeric days of
-    year (doys)
+    year (doys) or a POSIXct vector
 }
   \item{which}{
   A character to be chosen between 'light' (default) and 'heavy'. See details. 
@@ -26,6 +26,10 @@ KlostermanFit(ts, which = "light", uncert = FALSE, nrep = 100)
 }
   \item{nrep}{
   Number of relications to estimate uncertainty, defaults to 100. 
+}
+  \item{ncores}{
+Number of processors to be used in parallel computation, defaults to 'all' which will accidentally slow down any other activity on your computer. Otherwise set the number of processors you want to use in parallelization. 
+%%     ~~Describe \code{roi.name} here~~
 }
 }
 \details{
@@ -59,6 +63,8 @@ Gianluca Filippa <gian.filippa@gmail.com>
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+\dontrun{
+library(zoo)
 data(bartlett2009.filtered)
 ## fit without uncertainty estimation
 fitted.kl1 <- KlostermanFit(bartlett2009.filtered, which='light')
@@ -67,4 +73,7 @@ fitted.kl2 <- KlostermanFit(bartlett2009.filtered, which='heavy')
 plot(bartlett2009.filtered)
 lines(fitted.kl1$fit$predicted, col='red')
 lines(fitted.kl2$fit$predicted, col='blue')
+legend('topleft',col=c('red', 'blue'), lty=1, 
+  legend=c('light', 'heavy'), bty='n')
+}
 }

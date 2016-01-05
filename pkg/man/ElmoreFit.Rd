@@ -10,18 +10,22 @@ This function fits a double logistic curve to observed values using the
  provide and uncertainty estimation. 
 }
 \usage{
-ElmoreFit(ts, uncert = FALSE, nrep = 100)
+ElmoreFit(ts, uncert = FALSE, nrep = 100, ncores='all')
 }
 \arguments{
   \item{ts}{
      A ts or zoo object with gcc data. index(ts) must be numeric days of
-    year (doys)
+    year (doys) or a POSIXct vector
 }
   \item{uncert}{
        Should uncertainty be estimated?
 }
   \item{nrep}{
  Number of relications to estimate uncertainty, defaults to 100. 
+}
+  \item{ncores}{
+Number of processors to be used in parallel computation, defaults to 'all' which will accidentally slow down any other activity on your computer. Otherwise set the number of processors you want to use in parallelization. 
+%%     ~~Describe \code{roi.name} here~~
 }
 }
 \details{
@@ -53,14 +57,17 @@ ElmoreFit(ts, uncert = FALSE, nrep = 100)
 \code{\link{FitDoubleLogElmore}}
 }
 \examples{
+
+\dontrun{
+library(zoo)
 data(bartlett2009.filtered)
 ## fit without uncertainty estimation
 fitted.elmore <- ElmoreFit(bartlett2009.filtered)
-## check fitting
 plot(bartlett2009.filtered)
 lines(fitted.elmore$fit$predicted, col='red')
 ## look at fitting parameters
 fitted.elmore$fit$params
 ## look at fitting equation, where t is time
 fitted.elmore$fit$formula
+}
 }

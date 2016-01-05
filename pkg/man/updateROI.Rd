@@ -8,18 +8,15 @@ Update pixels included in a ROI of different pixel size
 This function allows to apply an already drawn ROI to the same image but with different resolution.   
 }
 \usage{
-updateROI(old.roi.path, new.path.img.ref, new.roi.path)
+updateROI(old.roi, new.img)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{old.roi.path}{
-Path to the ROI you have already drawn
+  \item{old.roi}{
+The roi object
 }
-  \item{new.path.img.ref}{
-Path to the reference image you want to extract the ROI
-}
-  \item{new.roi.path}{
-Path where to store new ROI data
+  \item{new.img}{
+An image array as read by \code{readJPEG} 
 }
 }
 \details{

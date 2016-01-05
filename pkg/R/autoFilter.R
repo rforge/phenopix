@@ -73,10 +73,11 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
 ## 90th quantile filter on a 3 days moving window
 .max.filter <- function(data, name='gcc', act.opts, ...) {
     w <- act.opts$w
+    qt <- act.opts$qt
     .max.fun <- function(x) {
-    quantile(x, 0.9, na.rm=T)
+    quantile(x, qt, na.rm=TRUE)
     }
-    computed.frequency <- median(diff(as.numeric(data$time)), na.rm=T)
+    computed.frequency <- median(diff(as.numeric(data$time)), na.rm=TRUE)
     data.per.day <- median(aggregate(data[,1], by=list(data$daily.time), FUN=length)[,2], na.rm=T)
     true.window <- data.per.day*w
     new.max <- rollapply(data[,name], FUN=.max.fun, width=true.window, fill='extend')
@@ -127,7 +128,7 @@ function(data, dn=c('ri.av', 'gi.av', 'bi.av'), raw.dn=FALSE, brt='bri.av', na.f
     if (is.null(filter.options)) {filter.options <- list(night.filter=list(threshold=0.2),
                       blue.filter=list(threshold=0.05),
                       mad.filter=list(z=15),
-                      max.filter=list(w=3),
+                      max.filter=list(w=3, qt=0.9),
                       spline.filter=list(stdup=4, stddown=4, loop_spline=20))
                           }
     classes <- NULL

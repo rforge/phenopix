@@ -1,10 +1,9 @@
-GuFit <-
-function (ts, uncert=FALSE, nrep=100) {
-		if (class(index(ts))[1]=='POSIXct') {
+GuFit <- function (ts, uncert=FALSE, nrep=100, ncores='all') {
+	if (class(index(ts))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(ts), '%j'))
 		index(ts) <- doy.vector
 	}
-fit <- FitDoubleLogGu(ts)
+	fit <- FitDoubleLogGu(ts)
 	residuals <- ts - as.vector(fit$predicted)
 	# res.range <- range(residuals, na.rm=TRUE)
 	# mean.res <- mean(residuals, na.rm=TRUE)
@@ -15,9 +14,14 @@ fit <- FitDoubleLogGu(ts)
 	res3 <- res2/max(res2)
 	sign.res <- sign(residuals)
 	if (uncert) {
-		predicted.df <- data.frame(matrix(ncol=nrep, nrow=length(ts)))
-		params.df <- data.frame(matrix(ncol=nrep, nrow=length(fit$params)))
-		for (a in 1:nrep) {
+		if (ncores=='all') cores <- detectCores() else cores <- ncores
+		cl <- makeCluster(cores)
+    # cl <- makeCluster(detectCores()-1)
+		registerDoParallel(cl)
+		expected.time <- nrep * 2.991 		
+		min.exp.time <- round(expected.time/60)
+		print(paste0('estimated computation time (4 cores): ', min.exp.time, ' mins'))
+		output <- foreach(a=1:nrep, .packages=c('phenopix'), .combine=c) %dopar% {
 			noise <- runif(length(ts), -sd.res, sd.res)
 			sign.noise <- sign(noise)
 			pos.no <- which(sign.res!=sign.noise)
@@ -25,19 +29,23 @@ fit <- FitDoubleLogGu(ts)
 			# randomly sample
 			noised <- ts + noise
 			fit.tmp <- FitDoubleLogGu(noised)
-			predicted.df[,a] <- fit.tmp$predicted
-			params.df[,a] <- fit.tmp$params
-			ratio <- a/nrep*100
-			print(paste('computing uncertainty: ', ratio, '% done', sep=''))
+			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
+			# ratio <- a/nrep*100
+			# print(paste('computing uncertainty: ', ratio, '% done', sep=''))
 		}
+		stopCluster(cl)
+		pred.pos <- which(names(output)=='predicted')
+		par.pos <- which(names(output)=='params')
+		predicted.df <- as.data.frame(output[pred.pos])
+		names(predicted.df) <- paste0('X',1:length(predicted.df))
 		predicted.df <- zoo(predicted.df, order.by=index(ts))
-		# tmp.df <- cbind(as.vector(fit$predicted), tmp.df)
-		# names(tmp.df)[1] <- 'fitted'
+		params.df <- as.data.frame(output[par.pos])
+		names(params.df) <- names(predicted.df)
 		uncertainty.list <- list(predicted=predicted.df, params=params.df)
 		returned <- list(fit=fit, uncertainty=uncertainty.list)
-	return(returned)	
+		return(returned)	
 	} else {
-returned <- list(fit=fit, uncertainty=NULL)
+		returned <- list(fit=fit, uncertainty=NULL)
 		(return(returned))
 	}
 }
