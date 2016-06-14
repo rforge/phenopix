@@ -42,13 +42,14 @@ fclose($handle);
 echo $contents; } ?>
 
 <!-- end of project description -->
+<p> 
 
-<p> New version 2.1 features the following news: 
-1. threshold method formerly called spline is now called trs, changed functions: PhenoExtract, greenProcess
-2. trs phase extraction method (formerly called spline) allows now to change the threshold of growth (by default 50%), changed functions: PhenoTrs
-3. the option to set the maximum quantile in max filter is customizable, changed functions: autoFilter, get.options, spatialFilter
-4. in the Exposure extraction the step of conversion of images from RGB to b/w was embedded in the other functions and therefore removed, 
-changed functions: binaryConvert (erased), trainOCR, getExposure, getCoords
+Package vignettes are currently up to date and available from within R by the usual vignette() command. A copy of them will also be available for download in Research Gate (https://www.researchgate.net/profile/Gianluca_Filippa) where there will be room for comments and discussion. 
+
+New version 2.2 features the following news: 
+1. extractVIs is now running in parallel!
+2. New functions available for the processing of coupled RGB and RGB+NIR images to obtain the camera NDVI: matchExposure() and NDVI() 
+
  </p>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
