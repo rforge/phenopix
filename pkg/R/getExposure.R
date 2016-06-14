@@ -44,10 +44,15 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 	## loop of exposure
 	exposure.final <- data.frame(image=all.jpeg.files, exposure=NA)
 	for (tt in 1:nrow(exposure.final)) {
+
 		image.target <- readJPEG(all.jpeg.files.full[tt])
 		image.target <- .binaryConvert(image.target)
 		image.width <- dim(image.target)[2]
 		image.height <- dim(image.target)[1]
+		counter <- 0
+		while(counter<6) {
+			counter <- counter+1
+
 		## cut according to coords
 		cut.image <- image.target[coords['y1']:coords['y2'], coords['x1']:coords['x2']]
 		cut.image.binary <- round(cut.image)
@@ -184,69 +189,39 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 			}
 		}
 		## match separated figures and sample numbers in a loop for each number
+		
 		choosen.numbers <- data.frame(n1=NA, n2=NA, n3=NA, n4=NA)
 		for (l in 1:4) {
 			act.letter <- get(paste0('letter',l))
 			if (class(act.letter)=='try-error' || nrow(act.letter)/ncol(act.letter)<1) next()
-				numbers <- c('0', '1', '2', '3', '4', 
-					'5', '6', '7', '8', '9')
-			track.numbers <- data.frame(number=numbers, ntrue=NA, pos=NA)
-			for (j in 1:length(numbers)) {
-				ntrues <- NULL
-				act.number <- binary.number.samples[[numbers[j]]]
-				number.matrix.dims <- dim(act.number)
-				for (a in 1:(dim(act.letter)[2] - number.matrix.dims[2]+1)) {
-					beg <- a
-					end <- a+(number.matrix.dims[2]-1)
-					tmp.matrix <- act.letter[,beg:end]
-					nwhites <- length(which(tmp.matrix==1))
-					nblacks <- length(which(tmp.matrix==0))
-					nblacks.ref.number <- length(which(act.number==0))
-					difference <- abs(nblacks.ref.number - nblacks)
-					if (difference>30) ntrue=0 else {
-						if (nblacks>nwhites) ntrue <- 0 else {
-							to.remove <- 1
-							na.letter <- tmp.matrix
-							na.letter[tmp.matrix==to.remove] <- NA						
-							ntrue <- length(which(na.letter==act.number))
-						}
-					}
-					ntrues <- c(ntrues, ntrue)
+				responses <- list()
+				for (a in 2:length(binary.number.samples)) {
+					response.tmp <- try(all(act.letter==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(1:2)]==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(1)]==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(1, ncol(act.letter))]==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(ncol(act.letter)-1, ncol(act.letter))]==binary.number.samples[[a]]), silent=TRUE)						
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(ncol(act.letter))]==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(6, ncol(act.letter))]==binary.number.samples[[a]]), silent=TRUE)
+					if (class(response.tmp)=='try-error' || !response.tmp) response.tmp <- try(all(act.letter[,-c(6, 1)]==binary.number.samples[[a]]), silent=TRUE)
+
+					length(which(act.letter==0))
+					length(which(binary.number.samples[[a]]==0))						
+					responses[a] <- response.tmp
 				}
-				track.numbers[j,2] <- max(ntrues)
-				track.numbers[j,3] <- which.max(ntrues)
-			}
-			## when 3 and 8 have the same max, it means thant 3 is the right number
-			condition <- FALSE
-			if (track.numbers$ntrue[track.numbers$number=='3'] == track.numbers$ntrue[track.numbers$number=='8']) {
-				track.numbers$ntrue[track.numbers$number=='3'] <- track.numbers$ntrue[track.numbers$number=='8']+1
-				if (track.numbers$number[which.max(track.numbers$ntrue)]=='3') condition <- TRUE
-			}
-			abs.max <- max(track.numbers$ntrue, na.rm=TRUE)
-			second.max <- max(track.numbers$ntrue[-which.max(track.numbers$ntrue)])
-			if (abs.max-second.max<15 & !condition & track.numbers$number[which.max(track.numbers$ntrue)]!=0) next()
-			the.max.pos <- which(track.numbers$ntrue == max(track.numbers$ntrue, na.rm=TRUE))
-			## compute the residuals, if all numbers have about the same chance the residuals will be small
-			## hence, if below a threshold, we discard the data
-		# 	na.pos.new <- 1
-		# 	while (length(na.pos.new)!=0) {
-		# 	to.mean <- mean(track.numbers$ntrue[track.numbers$ntrue!=0], na.rm=TRUE)	
-		# 	residuals <- abs(track.numbers$ntrue-to.mean)/to.mean
-		# 	na.pos.new <- which(residuals<0.2)
-		# 	if (length(na.pos.new)!=0) track.numbers$ntrue[na.pos.new] <- NA
-		# }
-		# if (!all(is.na(track.numbers$ntrue))) {
-		# 	the.max.pos <- which(track.numbers$ntrue == max(track.numbers$ntrue, na.rm=TRUE))
-		# } else the.max.pos <- numeric(0)
-			choosen.number <- as.character(track.numbers$number[which.max(track.numbers$ntrue)])
-			if (length(the.max.pos)!=1) choosen.number <- NA				
-			if (length(choosen.number)==0) choosen.number <- NA
-			choosen.numbers[l] <- choosen.number
-			tot.true <- sum(track.numbers$ntrue, na.rm=TRUE)
+				classes <- sapply(responses, class)
+				numbers <- c('E','0', '1', '2', '3', '4', 
+					'5', '6', '7', '8', '9')
+				responses[which(classes!='logical')] <- FALSE
+				pos.good <- which(responses==TRUE)
+		choosen.numbers[l] <- as.numeric(numbers[pos.good])
 		}
-		exposure.final[tt,2] <- .number.converted(choosen.numbers)
+		exposure.tmp <- .number.converted(choosen.numbers)
+		if(!is.na(exposure.tmp)) counter <- 10
+		exposure.final[tt,2] <- exposure.tmp
 		# print(paste(tt, tot.true, sep='-----'))
-			print(tt)
+			print(paste(tt, counter, sep='----'))
+		}
 	}
 	## convert date stamp
 	date.stamp <- sapply(as.character(exposure.final$image), FUN=extractDateFilename, date.code=date.code)
