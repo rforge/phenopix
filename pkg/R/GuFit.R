@@ -28,8 +28,10 @@ GuFit <- function (ts, uncert=FALSE, nrep=100, ncores='all') {
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]
 			# randomly sample
 			noised <- ts + noise
-			fit.tmp <- FitDoubleLogGu(noised)
+			fit.tmp <- try(FitDoubleLogGu(noised))
+			if (class(fit.tmp)=='try-error') out.single <- list(predicted=rep(NA, length(ts)), params=rep(NA,9)) else {
 			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
+		}
 			# ratio <- a/nrep*100
 			# print(paste('computing uncertainty: ', ratio, '% done', sep=''))
 		}

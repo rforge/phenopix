@@ -10,7 +10,7 @@ This function allows to fast compute all fitting and thresholding methods on a g
 \usage{
 spatialFilter(spatial.list, filter=c('night','spline', 'max'), 
   filter.options=NULL, 
-    ncores='all',log.file=NULL)
+    ncores='all',log.file=NULL, NDVI=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -33,6 +33,9 @@ Number of processors to be used in parallel computation, defaults to 'all' which
 }
  \item{log.file}{
   It can be NULL or a path where to generate and refresh a txt file which logs the progress of the filtering procedure  
+}
+ \item{NDVI}{
+ If TRUE filter is applied to NDVI values, data must be formatted differently from usual filtering. 
 }
 }
 \details{

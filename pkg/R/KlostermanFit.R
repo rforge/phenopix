@@ -37,8 +37,10 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 			# noise <- runif(length(ts), min.res, max.res)*(res3*3)			
 			# randomly sample
 			noised <- ts + noise
-			fit.tmp <- the.function(noised)
+			fit.tmp <- try(the.function(noised))
+			if (class(fit.tmp)=='try-error') out.single <- list(predicted=rep(NA, length(ts)), params=rep(NA,13)) else {
 			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
+		}
 			# ratio <- a/nrep*100
 			# print(paste('computing uncertainty: ', ratio, '% done', sep=''))
 		}

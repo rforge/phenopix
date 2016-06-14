@@ -16,6 +16,10 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 			if (act.num=='8') num.conv[a] <- 8
 			if (act.num=='9') num.conv[a] <- 9
 		}
+		pos.na.first <- which(is.na(num.conv))[1]
+		if (is.na(pos.na.first)) pos.na.first <- numeric(0)
+		if (length(pos.na.first!=0)) num.conv <- num.conv[1:(pos.na.first-1)]
+		# if (length(pos.na)==1 && pos.na==3) num.conv <- num.conv[1:2]
 		final.value <- as.numeric(paste(na.omit(t(num.conv)), collapse=''))
 		return(final.value)
 	}
@@ -183,7 +187,7 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 		choosen.numbers <- data.frame(n1=NA, n2=NA, n3=NA, n4=NA)
 		for (l in 1:4) {
 			act.letter <- get(paste0('letter',l))
-			if (class(act.letter)=='try-error') next()
+			if (class(act.letter)=='try-error' || nrow(act.letter)/ncol(act.letter)<1) next()
 				numbers <- c('0', '1', '2', '3', '4', 
 					'5', '6', '7', '8', '9')
 			track.numbers <- data.frame(number=numbers, ntrue=NA, pos=NA)
@@ -213,22 +217,36 @@ getExposure <- function(ipath, coords, train.data=FALSE, date.code, sample=NULL)
 				track.numbers[j,3] <- which.max(ntrues)
 			}
 			## when 3 and 8 have the same max, it means thant 3 is the right number
+			condition <- FALSE
 			if (track.numbers$ntrue[track.numbers$number=='3'] == track.numbers$ntrue[track.numbers$number=='8']) {
 				track.numbers$ntrue[track.numbers$number=='3'] <- track.numbers$ntrue[track.numbers$number=='8']+1
+				if (track.numbers$number[which.max(track.numbers$ntrue)]=='3') condition <- TRUE
 			}
+			abs.max <- max(track.numbers$ntrue, na.rm=TRUE)
+			second.max <- max(track.numbers$ntrue[-which.max(track.numbers$ntrue)])
+			if (abs.max-second.max<15 & !condition & track.numbers$number[which.max(track.numbers$ntrue)]!=0) next()
 			the.max.pos <- which(track.numbers$ntrue == max(track.numbers$ntrue, na.rm=TRUE))
 			## compute the residuals, if all numbers have about the same chance the residuals will be small
 			## hence, if below a threshold, we discard the data
-			residuals <- abs(track.numbers$ntrue-mean(track.numbers$ntrue))
-			na.pos.new <- which(residuals<5.5)
-			if (length(na.pos.new)!=0) track.numbers$ntrue[na.pos.new] <- NA
+		# 	na.pos.new <- 1
+		# 	while (length(na.pos.new)!=0) {
+		# 	to.mean <- mean(track.numbers$ntrue[track.numbers$ntrue!=0], na.rm=TRUE)	
+		# 	residuals <- abs(track.numbers$ntrue-to.mean)/to.mean
+		# 	na.pos.new <- which(residuals<0.2)
+		# 	if (length(na.pos.new)!=0) track.numbers$ntrue[na.pos.new] <- NA
+		# }
+		# if (!all(is.na(track.numbers$ntrue))) {
+		# 	the.max.pos <- which(track.numbers$ntrue == max(track.numbers$ntrue, na.rm=TRUE))
+		# } else the.max.pos <- numeric(0)
 			choosen.number <- as.character(track.numbers$number[which.max(track.numbers$ntrue)])
 			if (length(the.max.pos)!=1) choosen.number <- NA				
 			if (length(choosen.number)==0) choosen.number <- NA
 			choosen.numbers[l] <- choosen.number
+			tot.true <- sum(track.numbers$ntrue, na.rm=TRUE)
 		}
 		exposure.final[tt,2] <- .number.converted(choosen.numbers)
-		print(tt)
+		# print(paste(tt, tot.true, sep='-----'))
+			print(tt)
 	}
 	## convert date stamp
 	date.stamp <- sapply(as.character(exposure.final$image), FUN=extractDateFilename, date.code=date.code)
