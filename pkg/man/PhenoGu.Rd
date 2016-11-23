@@ -9,7 +9,7 @@ A function to extract phenological thresholds according to Gu et al. 2009.
 This is a rather internal function. Use PhenoExtract with method='gu' instead. 
 }
 \usage{
-PhenoGu(x, fit, uncert = FALSE, breaks, ...)
+PhenoGu(x, fit, uncert = FALSE, breaks, sf, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,6 +25,9 @@ Currently unused
 }
   \item{breaks}{
 Currently unused
+}
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
 }
   \item{\dots}{
   Further arguments, currently not used
@@ -83,7 +86,7 @@ PhenoGu in a for loop cycling in the uncertainty dataframe columns.
 \examples{
 data(bartlett2009.fitted)
 gu.phenophases <- PhenoGu(x=bartlett2009.fitted$fit$params, 
-	fit=bartlett2009.fitted$fit)
+	fit=bartlett2009.fitted$fit, sf=quantile(bartlett2009.fitted$fit$predicted, c(0.1, 0.9)))
 plot(bartlett2009.fitted$fit$predicted)
 abline(v=gu.phenophases[1:4], col=palette())
 mtext(names(gu.phenophases[1:4]), at=gu.phenophases[1:4], 

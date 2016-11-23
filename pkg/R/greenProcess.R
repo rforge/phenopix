@@ -1,6 +1,7 @@
 greenProcess <- function(ts, fit, threshold=NULL, plot=TRUE, which='light', uncert=FALSE, nrep=100, 
     envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ncores='all',...) {
 ## doy conversion
+sf <- quantile(ts, na.rm=TRUE, prob=c(0.05, 0.95))	
 doys <- as.numeric(format(index(ts), '%j'))	
 act.year <- format(index(ts)[1], '%Y')
 act.oct.first <- as.numeric(format(as.POSIXct(paste0(act.year, '-10-01')), '%j'))
@@ -18,8 +19,8 @@ if (fit=='beck') fit.fun <- BeckFit
 if (fit=='elmore') fit.fun <- ElmoreFit
 if (fit=='klosterman') fit.fun <- KlostermanFit
 if (fit=='gu') fit.fun <- GuFit
-if (fit=='klosterman') fitted.data <- try(fit.fun(ts, uncert=uncert, which=which, nrep=nrep, ncores=ncores)) else {
-fitted.data <- try(fit.fun(ts, uncert=uncert, nrep=nrep, ncores=ncores))
+if (fit=='klosterman') fitted.data <- try(fit.fun(ts, uncert=uncert, which=which, nrep=nrep, ncores=ncores, sf=sf)) else {
+fitted.data <- try(fit.fun(ts, uncert=uncert, nrep=nrep, ncores=ncores, sf=sf))
 }
 if (is.null(threshold)) {
 	metrics <- NULL 
@@ -27,7 +28,7 @@ if (plot) plot(fitted.data$fit$predicted, ...)
 }else {
 xlab <- ifelse(hydro, 'HydroDOY', 'DOY')	
 metrics <- PhenoExtract(fitted.data, method=threshold, envelope=envelope, quantiles=quantiles, uncert=uncert, 
-    plot=plot, xlab=xlab, ...)  
+    plot=plot, xlab=xlab, sf=sf, ...)  
 }
 output <- list(fit=fitted.data, metrics=metrics$metrics, data=ts, uncertainty.df=metrics$unc.df)
 ## set structure and attributes to output for summary, print, etc

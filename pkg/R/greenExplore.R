@@ -1,8 +1,15 @@
 greenExplore <- function(x) {
     ## a function to extract rmse
     .rmse <- function(fit) {
-        if (class(fit)=='try-error' | all(is.na(extract(fit, 'fitted')))) return(NA) else {
-            summary(lm(extract(fit, what='fitted') ~ extract(fit, what='data')))$sigma
+        if (class(fit)=='try-error' || class(fit$fit)=='try-error' || all(is.na(extract(fit, 'fitted')))) return(NA) else {
+            fitted <- extract(fit, what='fitted')
+            obs <- extract(fit, what='data')
+            napos <- which(is.na(fitted))
+            if (length(napos)!=0) {
+                obs <- obs[-napos]
+                fitted <- fitted[-napos]
+            }
+            summary(lm(fitted ~ obs))$sigma
         }
     }
     ## the fittings and their rmses

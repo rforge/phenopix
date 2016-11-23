@@ -1,4 +1,4 @@
-KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all') {
+KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all', sf=quantile(ts, probs=c(0.05, 0.95), na.rm=TRUE)) {
 		if (class(index(ts))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(ts), '%j'))
 		index(ts) <- doy.vector
@@ -8,7 +8,7 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 	if (which=='heavy') the.function <- FitDoubleLogKlHeavy
 	if (which=='light') the.function <- FitDoubleLogKlLight
 	# if (which=='complete') the.function <- FitDoubleLogKlosterman	
-	fit <- the.function(ts)
+	fit <- the.function(ts, sf=sf)
 ##	residuals <- as.vector(fit$predicted)-ts 
 	residuals <- ts - as.vector(fit$predicted)
 	# min.res <- min(residuals, na.rm=T)
@@ -29,15 +29,18 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 		expected.time <- nrep * 0.797
 		min.exp.time <- round(expected.time/60)
 		print(paste0('estimated computation time (4 cores): ', min.exp.time, ' mins'))
-		output <- foreach(a=1:nrep, .packages=c('phenopix'), .combine=c) %dopar% {
+		output <- foreach(a=1:nrep, 
+			.packages=c('phenopix'), 
+			.combine=c) %dopar% {
 			noise <- runif(length(ts), -sd.res, sd.res)		
+			# noise <- runif(length(ts), -10*sd.res, 10*sd.res)		
 			sign.noise <- sign(noise)
 			pos.no <- which(sign.res!=sign.noise)
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]
 			# noise <- runif(length(ts), min.res, max.res)*(res3*3)			
 			# randomly sample
 			noised <- ts + noise
-			fit.tmp <- try(the.function(noised))
+			fit.tmp <- try(the.function(noised, sf=sf))
 			if (class(fit.tmp)=='try-error') out.single <- list(predicted=rep(NA, length(ts)), params=rep(NA,13)) else {
 			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
 		}
@@ -53,10 +56,10 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 		params.df <- as.data.frame(output[par.pos])
 		names(params.df) <- names(predicted.df)
 		uncertainty.list <- list(predicted=predicted.df, params=params.df)
-		returned <- list(fit=fit, uncertainty=uncertainty.list)
+		returned <- list(fit=fit, uncertainty=uncertainty.list, sf=sf)
 	return(returned)	
 	} else {
-returned <- list(fit=fit, uncertainty=NULL)
+returned <- list(fit=fit, uncertainty=NULL, sf=sf)
 		(return(returned))
 	}
 }

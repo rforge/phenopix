@@ -15,6 +15,7 @@ function(
 ### time steps of output (can be used for interpolation)
 
     max.iter=200,
+    sf=quantile(x, probs=c(0.05, 0.95), na.rm=TRUE), 
 ### if TRUE the function returns parameters of the double logisitic fit, if FALSE it returns the fitted curve
 
 ### plot iterations for logistic fit?
@@ -29,6 +30,8 @@ function(
     ## \code{\link{TSGFdoublelog}}, \code{\link{Phenology}}
 
     ) {
+    .normalize <- function(x, sf) (x-sf[1])/(sf[2]-sf[1])
+        .backnormalize <- function(x, sf) (x+sf[1]/(sf[2]-sf[1]))*(sf[2]-sf[1])    
         if (any(is.na(x))) stop('NA in the time series are not allowed: fill them with e.g. na.approx()')
         if (class(index(x))[1]=='POSIXct') {
         doy.vector <- as.numeric(format(index(x), '%j'))
@@ -297,7 +300,8 @@ function(
 
 ## format data
 
-   n <- length(x)
+    n <- length(x)
+    x <- .normalize(x, sf=sf)
     avg <- mean(x, na.rm=TRUE)
     mx <- max(x, na.rm=TRUE)
     mn <- min(x, na.rm=TRUE)
@@ -362,6 +366,7 @@ uniqued <- uniqued.tmp[sample(dim(uniqued.tmp)[1], 200), ]
 
 nls.best <- .best.nls(data, comb=uniqued, max.iter=max.iter, params=all.pars)
 predicted <- predict(nls.best$fit)
+predicted <- .backnormalize(predicted, sf=sf)
 predicted <- zoo(predicted, order.by=t)
 pars <- nls.best$par
 par.choosen <- pars
@@ -377,6 +382,6 @@ the.names <- names(par.choosen)
 unlisted.pars <- as.vector(unlist(par.choosen))
 names(unlisted.pars) <- the.names
 fit.formula <- expression((a1*t + b1) + (a2*t^2 + b2*t + c)*(1/(1+q1*exp(-B1*(t-m1)))^v1 - 1/(1+q2*exp(-B2*(t-m2)))^v2))
-output <- list(predicted=predicted, params=unlisted.pars, formula=fit.formula)
+output <- list(predicted=predicted, params=unlisted.pars, formula=fit.formula, sf=sf)
 return(output)
 }

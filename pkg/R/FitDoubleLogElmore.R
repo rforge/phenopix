@@ -6,8 +6,11 @@ function(
 	return.par = FALSE,
 	plot = FALSE,
 	hessian = FALSE,
+	sf=quantile(x, probs=c(0.05, 0.95), na.rm=TRUE),
 	...
 ) {
+	.normalize <- function(x, sf) (x-sf[1])/(sf[2]-sf[1])
+        .backnormalize <- function(x, sf) (x+sf[1]/(sf[2]-sf[1]))*(sf[2]-sf[1])
 	if (any(is.na(x))) stop('NA in the time series are not allowed: fill them with e.g. na.approx()')
 		if (class(index(x))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(x), '%j'))
@@ -21,6 +24,7 @@ function(
 		if (!return.par) return(rep(NA, length(tout)))
 	}
 	n <- length(x)
+	        x <- .normalize(x, sf=sf)
 	avg <- mean(x, na.rm=TRUE)
 	mx <- max(x, na.rm=TRUE)
 	mn <- min(x, na.rm=TRUE)
@@ -81,6 +85,7 @@ function(
 	} else {
 		xpred <- .doubleLog(opt$par, tout)
 	}
+	    xpred <- .backnormalize(xpred, sf=sf)
 xpred.out <- zoo(xpred, order.by=t)
 names(opt$par) <- paste("m", 1:7, sep="")
     if (hessian) {
@@ -110,7 +115,7 @@ names(opt$par) <- paste("m", 1:7, sep="")
         }
 
 fit.formula <- expression(m1 + (m2 - m7 * t) * ( (1/(1 + exp(((m3/m4) - t)/(1/m4)))) - (1/(1 + exp(((m5/m6) - t)/(1/m6))))))
-output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula)
-if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors)
+output <- list(predicted=xpred.out, params=opt$par, formula=fit.formula, sf=sf)
+if (hessian) output <- list(predicted = xpred.out, params = opt$par, formula = fit.formula, stdError=std.errors, sf=sf)
 return(output)	
 }

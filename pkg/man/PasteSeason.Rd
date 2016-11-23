@@ -15,13 +15,13 @@ PasteSeason(x)
 \arguments{
   \item{x}{
   A list of objects as in output from 
-  \code{greenProcess}. All subseasonal fittings 
+  \code{\link{greenProcess}}. All subseasonal fittings 
   must be listed in a list and passed to the present function. 
 }
 }
 \details{
 This is a plotting facility which allows to plot in a single graph multiple fitting
-output from \code{greenProcess}.  
+output from \code{\link{greenProcess}}.  
 }
 \author{
   Gianluca Filippa <gian.filippa@gmail.com>

@@ -31,11 +31,10 @@ Should a diagnostic plot be returned?
 }
 \details{
 Threshold extraction is performed according to breakpoint analysis. 
-The function used is 
-\code{breakpoints} from package \code{strucchange}. 
-The function also computes a confidence interval by a call to \code{confint()}. 
+The function used is \code{\link{breakpoints}} from package \code{strucchange}. 
+The function also computes a confidence interval by a call to \code{\link{confint}}. 
 Uncertainty analysis is therefore different from the approach used for other 
-thresholds (see e.g. \code{PhenoGu}). Unlike the other thresholding approaches, 
+thresholds (see e.g. \code{\link{PhenoGu}}). Unlike the other thresholding approaches, 
 PhenoBP is born to work with raw data. It therefore does not require fitting 
 an equation. However, the function can also be used with fitted data. See example.   
 }

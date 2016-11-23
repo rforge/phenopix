@@ -1,8 +1,8 @@
 Package: phenopix
 Type: Package
 Title: Process Digital Images of a Vegetation Cover
-Version: 2.2
-Date: 2016-06-14
+Version: 2.3
+Date: 2016-11-23
 Author: Gianluca Filippa, Edoardo Cremonese, Mirco Migliavacca, Marta Galvagno, Matthias Folker, Andrew D. Richardson, Enrico Tomelleri 
 Maintainer: Gianluca Filippa <gian.filippa@gmail.com>
 Description: A collection of functions to process digital images, depict greennes index trajectories and extract relevant phenological stages. 

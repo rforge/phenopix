@@ -10,7 +10,8 @@ This function fits a double logistic curve to observed values using the
  function as described in Klosterman et al. (2014), equation 7. 
 }
 \usage{
-FitDoubleLogKlLight(x, t = index(x), tout = t, hessian=FALSE, ...)
+FitDoubleLogKlLight(x, t = index(x), tout = t, hessian=FALSE, 
+sf=quantile(x, probs=c(0.05, 0.95), na.rm=TRUE), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,7 +29,9 @@ FitDoubleLogKlLight(x, t = index(x), tout = t, hessian=FALSE, ...)
   \item{hessian}{
   Currently unimplemented. 
 }
-
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
+}
   \item{\dots}{
   Further arguments currenlty unused. 
 }

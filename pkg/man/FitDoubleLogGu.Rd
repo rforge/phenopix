@@ -9,7 +9,8 @@
  function as described in Gu et al. (2003). 
 }
 \usage{
-FitDoubleLogGu(x, t = index(x), tout = t, hessian=FALSE,  ...)
+FitDoubleLogGu(x, t = index(x), tout = t, hessian=FALSE, 
+sf=quantile(x, probs=c(0.05, 0.95), na.rm=TRUE), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,7 +28,9 @@ FitDoubleLogGu(x, t = index(x), tout = t, hessian=FALSE,  ...)
   \item{hessian}{
   Currently unimplemented. 
 }
-
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
+}
   \item{\dots}{
   Further arguments currenlty unused. 
 }

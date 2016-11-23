@@ -10,7 +10,8 @@ This function fits a double logistic curve to observed values using the
  provide and uncertainty estimation. 
 }
 \usage{
-ElmoreFit(ts, uncert = FALSE, nrep = 100, ncores='all')
+ElmoreFit(ts, uncert = FALSE, nrep = 100, ncores='all', 
+sf=quantile(ts, probs=c(0.05, 0.95), na.rm=TRUE))
 }
 \arguments{
   \item{ts}{
@@ -27,11 +28,14 @@ ElmoreFit(ts, uncert = FALSE, nrep = 100, ncores='all')
 Number of processors to be used in parallel computation, defaults to 'all' which will accidentally slow down any other activity on your computer. Otherwise set the number of processors you want to use in parallelization. 
 %%     ~~Describe \code{roi.name} here~~
 }
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
+}
 }
 \details{
  The function estimates parameters of the double logistic equation from
  Elmore et al. 2012 and provides an uncertainty estimation. Parameters are
- estimated by a call to the function FitDoubleLogElmore from the 
+ estimated by a call to the function \code{\link{FitDoubleLogElmore}} from the 
  greenbrown package. Uncertainty is computed by adding noise to the raw
  data and by estimating again the parameters. Noise is added according
  to the standard deviation of the residuals (fitted - observed).
@@ -63,7 +67,8 @@ library(zoo)
 data(bartlett2009.filtered)
 ## fit without uncertainty estimation
 fitted.elmore <- ElmoreFit(bartlett2009.filtered)
-plot(bartlett2009.filtered)
+days <- as.numeric(format(index(bartlett2009.filtered), '%j'))
+plot(days, bartlett2009.filtered)
 lines(fitted.elmore$fit$predicted, col='red')
 ## look at fitting parameters
 fitted.elmore$fit$params

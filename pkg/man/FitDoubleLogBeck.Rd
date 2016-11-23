@@ -11,7 +11,8 @@ See FitDoubleLogBeck from package greenbrown
 }
 \usage{
 FitDoubleLogBeck(x, t = index(x), tout = t, weighting = TRUE, 
-    return.par = FALSE, plot = FALSE, hessian=FALSE, ...)
+    return.par = FALSE, plot = FALSE, hessian=FALSE, 
+    sf=quantile(x, probs=c(0.05, 0.95), na.rm=TRUE), ...)
 }
 \arguments{
   \item{x}{
@@ -37,6 +38,10 @@ FitDoubleLogBeck(x, t = index(x), tout = t, weighting = TRUE,
   \item{hessian}{
   Currently unimplemented. 
 }
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
+}
+
   \item{\dots}{
   Further arguments currenlty unused. 
 }

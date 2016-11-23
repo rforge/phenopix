@@ -25,7 +25,9 @@ NDVI <- function(exposure.matched, RGB.VI, IR.VI, spatial=FALSE) {
       # ndvi <- 0.53*ndvi+0.84 # scaling factor from Andrew
       # ndvi[ndvi<0]<-NA
       # ndvi[ndvi>1]<-NA
-		exit.df$NDVI <- ndvi	
+		exit.df$NDVI <- ndvi
+		exit.df$NIR <- Xdn
+		exit.df$RED_corr <- Rdn	
 		return(exit.df)
 	} else {
 		pos.rgb <- which(as.POSIXct(names(RGB.VI)) %in% exposure.matched$RGB.timestamp == TRUE)

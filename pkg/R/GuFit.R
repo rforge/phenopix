@@ -1,9 +1,9 @@
-GuFit <- function (ts, uncert=FALSE, nrep=100, ncores='all') {
+GuFit <- function (ts, uncert=FALSE, nrep=100, ncores='all', sf=quantile(ts, probs=c(0.05, 0.95), na.rm=TRUE)) {
 	if (class(index(ts))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(ts), '%j'))
 		index(ts) <- doy.vector
 	}
-	fit <- FitDoubleLogGu(ts)
+	fit <- FitDoubleLogGu(ts, sf=sf)
 	residuals <- ts - as.vector(fit$predicted)
 	# res.range <- range(residuals, na.rm=TRUE)
 	# mean.res <- mean(residuals, na.rm=TRUE)
@@ -28,7 +28,7 @@ GuFit <- function (ts, uncert=FALSE, nrep=100, ncores='all') {
 			if (length(pos.no)!=0) noise[pos.no] <- -noise[pos.no]
 			# randomly sample
 			noised <- ts + noise
-			fit.tmp <- try(FitDoubleLogGu(noised))
+			fit.tmp <- try(FitDoubleLogGu(noised, sf=sf))
 			if (class(fit.tmp)=='try-error') out.single <- list(predicted=rep(NA, length(ts)), params=rep(NA,9)) else {
 			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
 		}

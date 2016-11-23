@@ -8,7 +8,8 @@ A function to fit a smoothed spline to Phenological Data
 A function to fit a smoothed spline to Phenological Data
 }
 \usage{
-SplineFit(ts, uncert = FALSE, nrep = 100, df.factor = 0.05, ncores='all')
+SplineFit(ts, uncert = FALSE, nrep = 100, df.factor = 0.05, 
+ncores='all', sf=quantile(ts, probs=c(0.05, 0.95), na.rm=TRUE))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,6 +31,9 @@ higher should be df factor. For a complete year of data
   \item{ncores}{
 Unused argument for compatibility
 %%     ~~Describe \code{roi.name} here~~
+}
+  \item{sf}{
+Scaling factors required to normalize the data prior to the fitting. If the function is called by e.g. \code{\link{greenProcess}} sf is automatically calculated.
 }
 }
 
