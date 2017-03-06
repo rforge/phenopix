@@ -13,7 +13,8 @@ NDVI <- function(exposure.matched, RGB.VI, IR.VI, spatial=FALSE) {
 		rdn <- exit.df$RGB.r.av
 		gdn <- exit.df$RGB.g.av
 		bdn <- exit.df$RGB.b.av
-		Rdn <-(rdn/sqrt(ey)) 
+		Rdn <-(rdn/sqrt(ey))
+		Bdn <- (bdn/sqrt(ey)) 
 		ydn <-((0.3*rdn)+(0.59*gdn)+(0.11*bdn))
 		zdn <- exit.df$IR.r.av
       # xdn <- exit.df$IR.r.av
@@ -22,12 +23,23 @@ NDVI <- function(exposure.matched, RGB.VI, IR.VI, spatial=FALSE) {
 		Ydn<-(ydn/sqrt(ey))
 		Xdn<-(Zdn-Ydn)           
 		ndvi<-((Xdn-Rdn)/(Xdn+Rdn))
+		## evi formulation used by MODIS
+		evi <- 2.5 * (Xdn-Rdn)/(Xdn + 6*Rdn - 7.5* Bdn + 1)
       # ndvi <- 0.53*ndvi+0.84 # scaling factor from Andrew
       # ndvi[ndvi<0]<-NA
       # ndvi[ndvi>1]<-NA
 		exit.df$NDVI <- ndvi
 		exit.df$NIR <- Xdn
 		exit.df$RED_corr <- Rdn	
+		s <- lm(NIR~RED_corr, na.omit(exit.df))$coefficients[[2]]
+		L <- 1 - (2*s*(Xdn-Rdn)*(Xdn-s*Rdn)) / (Xdn + Rdn)
+		msavi <- ((Xdn-Rdn)*(1+L) /(Xdn+Rdn+L))
+		msavi2 <- (2*Xdn+1-sqrt(((2*Xdn+1)^2)-8*(Xdn-Rdn))) / 2
+		exit.df$slope <- s
+		exit.df$L.savi <- L
+		exit.df$MSAVI <- msavi
+		exit.df$MSAVI2 <- msavi2
+		exit.df$EVI <- evi
 		return(exit.df)
 	} else {
 		pos.rgb <- which(as.POSIXct(names(RGB.VI)) %in% exposure.matched$RGB.timestamp == TRUE)
