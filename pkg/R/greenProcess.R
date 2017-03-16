@@ -1,7 +1,6 @@
 greenProcess <- function(ts, fit, threshold=NULL, plot=TRUE, which='light', uncert=FALSE, nrep=100, 
-    envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, ncores='all',...) {
+    envelope='quantiles', quantiles=c(0.1, 0.9), hydro=FALSE, sf=quantile(ts, na.rm=TRUE, prob=c(0.05, 0.95)), ncores='all',...) {
 ## doy conversion
-sf <- quantile(ts, na.rm=TRUE, prob=c(0.05, 0.95))	
 doys <- as.numeric(format(index(ts), '%j'))	
 act.year <- format(index(ts)[1], '%Y')
 act.oct.first <- as.numeric(format(as.POSIXct(paste0(act.year, '-10-01')), '%j'))

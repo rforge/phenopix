@@ -18,9 +18,16 @@ BeckFit <- function (ts, uncert=FALSE, nrep=100, ncores='all', sf=quantile(ts, p
 		cl <- makeCluster(cores)
     # cl <- makeCluster(detectCores()-1)
 		registerDoParallel(cl)
-		expected.time <- nrep * 4.423
-		min.exp.time <- round(expected.time/60)
-		print(paste0('estimated computation time (4 cores): ', min.exp.time, ' mins'))
+		coefs <- c(5.614, 0.00448, -0.670)		
+		.pred.fun <- function(coefs, cores, nrep) {
+			expected.time <- coefs[1] + coefs[2]*nrep + coefs[3]*log(cores)
+			names(expected.time) <- NULL
+			return(round(exp(expected.time)/60))
+		}
+		min.exp.time <- .pred.fun(coefs, cores, nrep)
+		# expected.time <- nrep * 0.797
+		# min.exp.time <- round(expected.time/60)
+		print(paste0('estimated computation time (',cores,' cores): ', min.exp.time, ' mins'))
 		output <- foreach(a=1:nrep, .packages=c('phenopix'), .combine=c) %dopar% {
 			noise <- runif(length(ts), -sd.res, sd.res)
 			sign.noise <- sign(noise)

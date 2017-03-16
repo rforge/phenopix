@@ -1,4 +1,4 @@
-greenExplore <- function(x) {
+greenExplore <- function(x, ...) {
     ## a function to extract rmse
     .rmse <- function(fit) {
         if (class(fit)=='try-error' || class(fit$fit)=='try-error' || all(is.na(extract(fit, 'fitted')))) return(NA) else {
@@ -14,19 +14,19 @@ greenExplore <- function(x) {
     }
     ## the fittings and their rmses
     print('Fitting spline 1/5')
-    fit.spline <- try(greenProcess(x, fit='spline', plot=FALSE))
+    fit.spline <- try(greenProcess(x, fit='spline', plot=FALSE, ...))
     spline.rmse <- .rmse(fit.spline)
     print('Fitting Beck 2/5')
-    fit.beck <- try(greenProcess(x, fit='beck', plot=FALSE))
+    fit.beck <- try(greenProcess(x, fit='beck', plot=FALSE, ...))
     beck.rmse <- .rmse(fit.beck)
     print('Fitting Elmore 3/5')
-    fit.elmore <- try(greenProcess(x, fit='elmore', plot=FALSE))
+    fit.elmore <- try(greenProcess(x, fit='elmore', plot=FALSE, ...))
     elmore.rmse <- .rmse(fit.elmore)
     print('Fitting Klosterman 4/5')
-    fit.klosterman <- try(greenProcess(x, fit='klosterman', plot=FALSE))
+    fit.klosterman <- try(greenProcess(x, fit='klosterman', plot=FALSE, ...))
     klosterman.rmse <- .rmse(fit.klosterman)
     print('Fitting Gu 5/5')
-    fit.gu <- try(greenProcess(x, fit='gu', plot=FALSE))
+    fit.gu <- try(greenProcess(x, fit='gu', plot=FALSE, ...))
     gu.rmse <- .rmse(fit.gu)
     rmses <- c(spline.rmse, beck.rmse, elmore.rmse, klosterman.rmse, gu.rmse)
     names(rmses) <- c('spline', 'beck', 'elmore', 'klosterman', 'gu')

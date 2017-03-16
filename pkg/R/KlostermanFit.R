@@ -1,5 +1,5 @@
 KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all', sf=quantile(ts, probs=c(0.05, 0.95), na.rm=TRUE)) {
-		if (class(index(ts))[1]=='POSIXct') {
+	if (class(index(ts))[1]=='POSIXct') {
 		doy.vector <- as.numeric(format(index(ts), '%j'))
 		index(ts) <- doy.vector
 	}
@@ -26,9 +26,16 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 		cl <- makeCluster(cores)
     # cl <- makeCluster(detectCores()-1)
 		registerDoParallel(cl)
-		expected.time <- nrep * 0.797
-		min.exp.time <- round(expected.time/60)
-		print(paste0('estimated computation time (4 cores): ', min.exp.time, ' mins'))
+		coefs <- c(7.218, 0.00424, -0.697)		
+		.pred.fun <- function(coefs, cores, nrep) {
+			expected.time <- coefs[1] + coefs[2]*nrep + coefs[3]*log(cores)
+			names(expected.time) <- NULL
+			return(round(exp(expected.time)/60))
+		}
+		min.exp.time <- .pred.fun(coefs, cores, nrep)
+		# expected.time <- nrep * 0.797
+		# min.exp.time <- round(expected.time/60)
+		print(paste0('estimated computation time (',cores,' cores): ', min.exp.time, ' mins'))
 		output <- foreach(a=1:nrep, 
 			.packages=c('phenopix'), 
 			.combine=c) %dopar% {
@@ -42,8 +49,8 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 			noised <- ts + noise
 			fit.tmp <- try(the.function(noised, sf=sf))
 			if (class(fit.tmp)=='try-error') out.single <- list(predicted=rep(NA, length(ts)), params=rep(NA,13)) else {
-			out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
-		}
+				out.single <- list(predicted=fit.tmp$predicted, params=fit.tmp$params)
+			}
 			# ratio <- a/nrep*100
 			# print(paste('computing uncertainty: ', ratio, '% done', sep=''))
 		}
@@ -57,9 +64,9 @@ KlostermanFit <- function (ts, which='light',uncert=FALSE, nrep=100, ncores='all
 		names(params.df) <- names(predicted.df)
 		uncertainty.list <- list(predicted=predicted.df, params=params.df)
 		returned <- list(fit=fit, uncertainty=uncertainty.list, sf=sf)
-	return(returned)	
+		return(returned)	
 	} else {
-returned <- list(fit=fit, uncertainty=NULL, sf=sf)
+		returned <- list(fit=fit, uncertainty=NULL, sf=sf)
 		(return(returned))
 	}
 }

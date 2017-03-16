@@ -103,11 +103,13 @@ function(
     sub.gcc <- scaled.values[which(days>=SD & days<=DD)]
     if (length(sub.time)>3) {
         ##compute a linear fit
-        plateau.lm <- lm(sub.gcc~sub.time)
+        plateau.lm <- try(lm(sub.gcc~sub.time))
+        if (class(plateau.lm)!='try-error') {
         M <- matrix( c(coef(plateau.lm)[2], coef(sl.eq)[2], -1,-1), nrow=2, ncol=2 )
         intercepts <- as.matrix( c(coef(plateau.lm)[1], coef(sl.eq)[1]))
         interception <- -solve(M) %*% intercepts
         DD <- interception[1,1]
+    }
     }
     ## calculate area under the curve
     # cut.x <- days[which(days>=UD & days<=RD)]

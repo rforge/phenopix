@@ -51,16 +51,16 @@ function(
         a2 <- 0 #ok
         # b1 <- mn #ok
         b1 <- 0
-        b2 <- 0 #ok
+        b2 <- -0.02 #ok
         # c <- 0.2*max(x) # ok 
-        c <- 1 # ok 
+        c <- 3 # ok versione 2.3
     ## very slightly smoothed spline to get reliable maximum
         tmp <- smooth.spline(x, df=0.5*length(x))
         doy.max <- which.max(tmp$y)
         # B1 <- 4/(doy.max-doy[1])        
         # # B1 <- 1/(doy.max-doy[1])
-        # B2 <- 4/(doy[2]-doy.max)
-        B1 <- B2 <- 0.5
+        # B2 <- 3.2/(doy[2]-doy.max)
+        B1 <- B2 <- 0.1 # versione 2.3
         # B2 <- 1.5/(doy[2]-doy.max)
         m1 <- doy[1] + 0.5*(doy.max-doy[1])
         # # m1 <- doy[1] + 0.5*(doy.max-doy[1])
@@ -73,20 +73,21 @@ function(
         m2.bis  <- doy[2]  
         # q1 <- 0.5 #ok
         # q2 <- 0.5 #ok
-        q1 <- 0.5 #ok
-        q2 <- 0.5 #ok
+        q1 <- 1 #ok
+        q2 <- 1 #ok
         q1.bis <- 5 #ok
         q2.bis <- 5 #ok        
         # v1 <- 2 # ok
         # v2 <- 2 # ok
-        v1 <- 2 # ok
-        v2 <- 2 # ok
+        v1 <- 7.5 # ok
+        v2 <- 7.5 # ok
         v2.bis <- 1
-        parscales <- c(0.00001, 0.00001, 0.001, 0.0001, 0.1, 0.001, 0.001, 10, 10, 10, 10, 10, 10)
-        lower.b <- c(-0.01, -0.0001, -0.5, -0.001, 0.5, 0, 0, 0, 0, 0, 0, 0, 0)
-        upper.b <- c(0.01, 0.0001, 0.5, 0.001, 2, 5, 5, 350, 500, 10, 10, 10, 10)
-        # lower.b <- c(-0.1, -0.001, -5, -0.01, 0.5, 0, 0, 0, 0, 0, 0, 0, 0)
-        # upper.b <- c(0.1, 0.001, 5, 0.01, 2, 5, 5, 350, 500, 10, 10, 10, 10)
+        # parscales <- c(a1=0.001, a2=0.0001, b1=0.1, b2=0.001, c=1, B1=0.01, B2=0.01, m1=100, m2=100, q1=0.1, q2=0.1, v1=1, v2=1) # funzionano
+        parscales <- c(a1=0.01, a2=0.001, b1=1, b2=0.01, c=10, B1=0.1, B2=0.1, m1=1000, m2=1000, q1=1, q2=1, v1=10, v2=10)
+        # lower.b <- c(-5e-1, 3.5e-2, -1, -0.02, 0.5, 0, 0, 0, 100, 0, 0, 0, 0)
+        # upper.b <- c(5e-1, 5e-2, 1, -0.1, 10.5, 0.25, 0.25, 200, 400, 1, 1, 15, 15)
+        lower.b <- c(a1=-5e-4, a2=3.5e-5, b1=-0.2, b2=-0.022, c=2.5, B1=0, B2=0, m1=0, m2=100, q1=0, q2=0, v1=0, v2=0)
+        upper.b <- c(a1=5e-4, a2=5e-5, b1=0.2, b2=-0.018, c=3.5, B1=0.25, B2=0.25, m1=200, m2=400, q1=1, q2=1, v1=15, v2=15)
 
         prior <- rbind(
             c(a1, a2, b1, b2, c, B1, B2, m1,m2, q1, q2, v1, v2),
@@ -97,25 +98,27 @@ function(
             c(a1, a2, b1, b2, c, B1, B2, m1.bis,m2, q1, q2.bis, v1, v2.bis)
             )
         # opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", control=list(maxit=1000), hessian=hessian)   # fit from different prior values
-        opt.l <- apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", 
-            # lower=lower.b, upper=upper.b, 
-            control=list(maxit=10000
-                # , parscale=parscales
-                ), hessian=hessian)   # fit from different prior values
+        opt.l <- suppressWarnings(apply(prior, 1, optim, .error, x=x, t=t, method="BFGS", 
+            lower=lower.b, upper=upper.b, 
+            control=list(maxit=1000
+                , parscale=parscales
+                ), hessian=hessian))   # fit from different prior values
         opt.df <- cbind(cost=unlist(llply(opt.l, function(opt) opt$value)), convergence=unlist(llply(opt.l, function(opt) opt$convergence)), ldply(opt.l, function(opt) opt$par))
-        pos <- which(opt.df$V5 < -2 | opt.df$V5 > 5 | opt.df$V6 < 0 | opt.df$V7 < 0 | opt.df$V8 < -0.01 | opt.df$V9 < -0.01 | opt.df$V10 < 0 | opt.df$V11 < 0)
-        if (length(pos)!=0) {
-            opt.df <- opt.df[-pos,]
-            opt.l <- opt.l[-pos]
-        }
+        # pos <- which(opt.df$V5 < -2 | opt.df$V5 > 5 | opt.df$V6 < 0 | opt.df$V7 < 0 | opt.df$V8 < -0.01 | opt.df$V9 < -0.01 | opt.df$V10 < 0 | opt.df$V11 < 0)
+        # if (length(pos)!=0) {
+        #     opt.df <- opt.df[-pos,]
+        #     opt.l <- opt.l[-pos]
+        # }
+        pos.error <- which(opt.df$convergence == 52)
+        if (length(pos.error)!=0) opt.df <- opt.df[-pos.error,]
         best <- which.min(opt.df$cost)
         if (opt.df$convergence[best] == 1) { # if maximum iterations where reached - restart from best with more iterations
         opt <- opt.l[[best]]
-        opt <- optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", 
-            # lower=lower.b, upper=upper.b, 
-            control=list(maxit=50000
-                # , parscale=parscales
-                ), hessian=hessian)
+        opt <- suppressWarnings(optim(opt.l[[best]]$par, .error, x=x, t=t, method="BFGS", 
+            lower=lower.b, upper=upper.b, 
+            control=list(maxit=5000
+                , parscale=parscales
+                ), hessian=hessian))
         prior <- rbind(prior, opt$par)
         xpred <- .doubleLog(opt$par, t)
     } else if (opt.df$convergence[best] == 0) {

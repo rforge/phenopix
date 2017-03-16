@@ -10,16 +10,19 @@ function(data,
 		the.function <- PhenoTrs
 		single.data <- data$fit$predicted
 		uncertainty.data <- data$uncertainty$predicted
+		nna <- 10
 	} 	
 	if (method=='derivatives') {
 		the.function <- PhenoDeriv
 		single.data <- data$fit$predicted
 		uncertainty.data <- data$uncertainty$predicted
+				nna <- 10
 	} 
 	if (method=='gu') {
 		the.function <- PhenoGu
 		single.data <- data$fit$params
 		uncertainty.data <- data$uncertainty$params
+				nna <- 9
 	} 	
 # if (method=='bayesian') {
 # 		the.function <- PhenoBayes
@@ -32,13 +35,15 @@ function(data,
 		the.function <- PhenoKl
 		single.data <- data$fit$params
 		uncertainty.data <- data$uncertainty$params
+				nna <- 4
 	} 
 	if (is.null(data$uncertainty) | uncert==FALSE) {
 		returned <- suppressWarnings(the.function(single.data, fit=data$fit, uncert=uncert, breaks=breaks, sf=sf, ...)) 
 	} else {
 		thresholds <- NULL
 		for (a in 1:dim(uncertainty.data)[2]) {
-			tmp.column <- suppressWarnings(the.function(uncertainty.data[,a], fit=data$fit, uncert=uncert, breaks=breaks, sf=sf, ...))
+			tmp.column <- try(suppressWarnings(the.function(uncertainty.data[,a], fit=data$fit, uncert=uncert, breaks=breaks, sf=sf, ...)))
+			if (class(tmp.column)=='try-error') tmp.column <- rep(NA, nna)
 			thresholds <- cbind(thresholds, tmp.column)
 		}
 	# thresholds <- apply(uncertainty.data, 2, the.function, uncert=TRUE, fit=data$fit, breaks=breaks) 
